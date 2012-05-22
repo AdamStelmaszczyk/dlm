@@ -59,8 +59,8 @@ void SimpleConsole::callProc(const std::string &dst)
 		close(p_request[READ_DESC]);
 		char buff[256];
 		sprintf(buff, "%d", p_request[WRITE_DESC]);
-		execl(dst.c_str(), dst.c_str(), buff, 0); // TODO poprawic pierwszy argument (sama nazwa programu), dodac dodatkowe argumenty
-		throw WARNING(string("couldn't open exec file: ")+string(dst.c_str()));
+		execl(dst.c_str(), dst.c_str(), buff, (char*) 0); // TODO poprawic pierwszy argument (sama nazwa programu), dodac dodatkowe argumenty
+		throw WARNING("couldn't open exec file: " + dst);
 	}
 	else if (child_pid == -1)
 		throw WARNING("couldn't create child process");

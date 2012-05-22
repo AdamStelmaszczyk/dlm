@@ -36,10 +36,13 @@ Listener::~Listener()
 {
 }
 
-void *start_listener(void *ptr)
-{ // here starts new thread
+void* start_listener(void *ptr)
+{
+	// here starts new thread
 	Listener *listener = (Listener*)(ptr);
 	listener->start();
+
+	return NULL;
 }
 
 }

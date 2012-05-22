@@ -1,1 +1,9 @@
 DLM Manager - UXP1A, 2012
+
+Takto wszystko fajnie, tylko 3 male propozycje:
+1. Język. Wszystko piszmy po angielsku, kod, komunikaty, komentarze, zeby bylo spojnie.
+   Ew. komentarze do nas/tymczasowe moga byc po polsku.
+2. Komentarze nagłówkowe. @class może być, @brief też, @author bym wyrzucił ew. na koncu sie dopisze ladnie wszystkich, 
+   @version gdzieś widziałem, tak naprawdę to @date może zostać i to będzie nasze version. Czyli class, brief, date.
+3. Namespace. Albo robmy using namespace coś albo coś::. Widze, ze dla std jest ta druga taktyka stosowana, dobrze.
+   To dla dlm tez tak zrobmy.

@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-
 // macro to call warning with selected file and line number
 #define WARNING(a) Warning((a), __FILE__, __LINE__)
 
