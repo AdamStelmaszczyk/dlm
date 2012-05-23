@@ -27,5 +27,8 @@ Kwestie do rozwiązania:
   Trzeba to jakoś inaczej zrobić, żeby było to czytelne.
 - jak przekazywać deskryptory potoków do procesu potomnego. Najprostszy pomysł to przekazywac jest w argv procesu potomnego (np. na końcu argv) tylko to trochę jest
   nieeleganckie
-- jak zrealizować lock managera - moim zdaniem powinna ona trzymać dla każdego zasobu dwie struktury: pierwsza: lista dotyczy locków, które zostały 
-  zaakceptowane (tzn. procesy je zakładające się nie zablokowały) - resource id ->  (pid, rodzaj_locka); druga: kolejka FIFO trójek (pid, rodzaj_locka, zmiena    warunkowa) określająca procesy które się zablokowały na zasobie. Gdy jest wykonywany DLM_lock, sprawdzane jest czy podany rodzaj locka jest kompatybilny z innymi, jeżeli tak, to dodaj do pierwszej listy, jeżeli nie to dodaj na koniec kolejki fifo. DLM_unlock - usuń element z listy akceptowanych, sprawdź czy któryś z listy czekających jest kompatybilny, jeżeli tak to go signal jego zmienną warunkową i przenieś go do listy locków zaakceptowanych.
+- jak zrealizować lock managera - moim zdaniem powinna ona trzymać dla każdego zasobu dwie struktury: pierwsza: lista dotyczy locków, które zostały
+  zaakceptowane (tzn. procesy je zakładające się nie zablokowały) - resource id ->  (pid, rodzaj_locka); druga: kolejka FIFO trójek (pid, rodzaj_locka, zmienna
+  warunkowa) określająca procesy które się zablokowały na zasobie. Gdy jest wykonywany DLM_lock, sprawdzane jest czy podany rodzaj locka jest kompatybilny z innymi,
+  jeżeli tak, to dodaj do pierwszej listy, jeżeli nie to dodaj na koniec kolejki fifo. DLM_unlock - usuń element z listy akceptowanych, sprawdź czy któryś z listy
+  czekających jest kompatybilny, jeżeli tak to go signal jego zmienną warunkową i przenieś go do listy locków zaakceptowanych.
