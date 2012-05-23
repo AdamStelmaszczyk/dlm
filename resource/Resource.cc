@@ -3,8 +3,6 @@
  *
  * @class Resource
  * @brief Brief description.
- * @author nieznany
- * @version APP_V.MODULE_V.CLASS_V
  * @date 20-05-2012
  */
 

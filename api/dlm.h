@@ -3,7 +3,6 @@
  *
  * @class dlm
  * @brief Distributed Lock Manager declarations.
- * @author nieznany
  * @date 20-05-2012
  */
 

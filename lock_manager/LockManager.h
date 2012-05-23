@@ -4,7 +4,6 @@
  * @class LockManager
  * @brief Stores info about locks, provides methods
  *  	  to lock and unlock resource.
- * @author nieznany
  * @date 20-05-2012
  */
 

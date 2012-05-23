@@ -2,7 +2,6 @@
  * LockManager.cc
  *
  * @class LockManager
- * @author nieznany
  * @date 20-05-2012
  */
 

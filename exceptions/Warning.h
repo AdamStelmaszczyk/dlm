@@ -3,7 +3,6 @@
  *
  * @class Warning
  * @brief Indicates app warning (needn't terminate app).
- * @author nieznany
  * @date 20-05-2012
  */
 

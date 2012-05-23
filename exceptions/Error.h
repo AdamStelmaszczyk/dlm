@@ -3,7 +3,6 @@
  *
  * @class Error
  * @brief Indicates app error (should terminate app).
- * @author nieznany
  * @date 21-05-2012
  */
 

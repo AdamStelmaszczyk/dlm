@@ -3,7 +3,6 @@
  *
  * @class Listener
  * @brief Brief description.
- * @author nieznany
  * @date 20-05-2012
  */
 

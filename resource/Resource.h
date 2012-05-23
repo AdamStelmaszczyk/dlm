@@ -3,7 +3,6 @@
  *
  * @class Resource
  * @brief Abstract class of resource.
- * @author nieznany
  * @date 20-05-2012
  */
 
