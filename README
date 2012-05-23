@@ -3,7 +3,29 @@ DLM Manager - UXP1A, 2012
 Takto wszystko fajnie, tylko 3 male propozycje:
 1. Język. Wszystko piszmy po angielsku, kod, komunikaty, komentarze, zeby bylo spojnie.
    Ew. komentarze do nas/tymczasowe moga byc po polsku.
+   
+   [pjarosik] ja to co zrobiłem na razie, nie ma żadnego sensu, tylko próbowałem jakoś to rozsądnie
+   rozdzielić. komentarze są miejscami po polsku, bo myślałem, że to co tam napisałem sam zaraz poprawię, ale jest póki co jeszcze parę innych
+   rzeczy do zrobienia, więc dałem sobie spokój. Ten projekt jest prosty, można go dobrze i szybko zrobić przy odpowiednim podziale tym co kto robi,
+   tylko jest parę kwestii do rozwiązania (patrz niżej).
+   
 2. Komentarze nagłówkowe. @class może być, @brief też, @author bym wyrzucił ew. na koncu sie dopisze ladnie wszystkich, 
    @version gdzieś widziałem, tak naprawdę to @date może zostać i to będzie nasze version. Czyli class, brief, date.
-3. Namespace. Albo robmy using namespace coś albo coś::. Widze, ze dla std jest ta druga taktyka stosowana, dobrze.
+   
+3. Namespace. 
+   Albo robmy using namespace coś albo coś::. Widze, ze dla std jest ta druga taktyka stosowana, dobrze.
    To dla dlm tez tak zrobmy.
+   
+   [pjarosik] Wg mnie jedynym poprawnym rozwiązaniem jest: gdy używamy czegoś z jakiegoś namespace'a w plikach nagłówkowych, korzystamy
+              wyłącznie z ::. W przypadku implementacji (w plikach .cpp) można sobie używać using namespace, ale to już jak 
+              komu wygodniej, możliwe, że ja rzeczywiście byłem miejscami niekonsekwentny. W plikach nagłówkowych nie powinno się używać using namespace, 
+              bo są one include'owane, czyli jak ktoś włączy sobie ten plik do swojego pliku, to automatycznie także ma włączone using namespace.
+              
+Kwestie do rozwiązania:
+- ten dlm będzie tak na prawdę prostą konsolą, co jest trochę kłoptliwe. Bo jeżeli uruchomimy jakiś proces pochodny, to jego stdin stdout jest takie jak procesu 
+  macierzystego a to powoduje, że jak uruchomimy kilka procesów, to ich komunikaty się będą przpeplatać, przy okazji zamazując miejsce do pisania w konsoli.
+  Trzeba to jakoś inaczej zrobić, żeby było to czytelne.
+- jak przekazywać deskryptory potoków do procesu potomnego. Najprostszy pomysł to przekazywac jest w argv procesu potomnego (np. na końcu argv) tylko to trochę jest
+  nieeleganckie
+- jak zrealizować lock managera - moim zdaniem powinna ona trzymać dla każdego zasobu dwie struktury: pierwsza: lista dotyczy locków, które zostały 
+  zaakceptowane (tzn. procesy je zakładające się nie zablokowały) - resource id ->  (pid, rodzaj_locka); druga: kolejka FIFO trójek (pid, rodzaj_locka, zmiena    warunkowa) określająca procesy które się zablokowały na zasobie. Gdy jest wykonywany DLM_lock, sprawdzane jest czy podany rodzaj locka jest kompatybilny z innymi, jeżeli tak, to dodaj do pierwszej listy, jeżeli nie to dodaj na koniec kolejki fifo. DLM_unlock - usuń element z listy akceptowanych, sprawdź czy któryś z listy czekających jest kompatybilny, jeżeli tak to go signal jego zmienną warunkową i przenieś go do listy locków zaakceptowanych.
