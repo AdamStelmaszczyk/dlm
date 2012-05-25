@@ -19,4 +19,4 @@ LockManager::~LockManager()
 {
 }
 
-} /* namespace matryca */
+} /* namespace dlm */
