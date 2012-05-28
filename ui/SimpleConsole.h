@@ -10,6 +10,7 @@
 #define SIMPLECONSOLE_H_
 #include <iostream>
 #include <string>
+#include "../config/Config.h"
 
 #define READ_DESC 0
 #define WRITE_DESC 1
@@ -39,6 +40,7 @@ private:
 	std::istream& in_;
 	/** output stream */
 	std::ostream& out_;
+	/** config object */
 };
 
 } /* namespace dlm */

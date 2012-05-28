@@ -5,6 +5,7 @@
 #include "../exceptions/Warning.h"
 #include "../exceptions/Error.h"
 #include "../listener/Listener.h"
+#include "../logger/Logger.h"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ namespace dlm
 SimpleConsole::SimpleConsole(istream &in, ostream &out) :
 		in_(in), out_(out)
 {
+	Logger::getInstance().setOutputStream(out);
 }
 
 SimpleConsole::~SimpleConsole()
@@ -23,6 +25,7 @@ SimpleConsole::~SimpleConsole()
 void SimpleConsole::start()
 {
 	string instr;
+
 	while (in_)
 	{
 		try
@@ -32,12 +35,12 @@ void SimpleConsole::start()
 		}
 		catch (const Warning &e)
 		{
-			out_ << e.what() << endl; // TODO uzyc loggera
+			Logger::getInstance().log(e.what());
 			continue; // Warnings shows only message, but shouldn't kill dlm
 		}
 		catch (const std::exception &e)
 		{ // other exceptions - here is also Error
-			out_ << e.what() << endl;
+			Logger::getInstance().log(e.what());
 			exit(-1); // we don't know what to do, let's kill him (dlm)
 		}
 	}
