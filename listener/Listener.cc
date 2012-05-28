@@ -1,10 +1,4 @@
-/**
- * Listener.cc
- *
- * @class Listener
- * @brief Brief description.
- * @date 20-05-2012
- */
+// TODO obsluga sygnalow SIG_CHLD i podobnych
 
 #include <pthread.h>
 #include <iostream>
@@ -12,6 +6,10 @@
 #include <errno.h>
 #include <sys/types.h>
 
+#include "LockRequest.h"
+#include "UnlockRequest.h"
+#include "TryLockRequest.h"
+#include "../api/dlm.h"
 #include "Listener.h"
 #include "../exceptions/Error.h"
 #include "../exceptions/Warning.h"
@@ -22,8 +20,8 @@ using namespace std;
 namespace dlm
 {
 
-Listener::Listener(int p_response, int p_request) :
-		p_response_(p_response), p_request_(p_request)
+Listener::Listener(int p_response, int p_request, pid_t client, LockManager& lm) :
+		p_response_(p_response), p_request_(p_request), client_(client), lockManager_(lm)
 {
 }
 
@@ -49,11 +47,12 @@ void Listener::start()
 		catch (const Warning &e)
 		{
 			Logger::getInstance().log(e.what());
+			continue;
 		}
 		catch (const Error &e)
 		{
 			Logger::getInstance().log(e.what());
-			pthread_exit(NULL); // stop that thread
+			pthread_exit(NULL); // error stops that thread
 		}
 	}
 }
@@ -64,22 +63,39 @@ Listener::~Listener()
 
 void Listener::handleLockRequest()
 {
-	// first should be r_id
-if()
+	LockRequest r;
+	// now we read args for LockManager
+	if (read(p_request_, &r, sizeof(LockRequest)) == -1)
+		throw ERROR("Couldn't read lock message from pipe", errno);
+	int result = lockManager_.lock(r, client_);
+	// TODO wysylac odpowiedz
 }
 
 void Listener::handleTryLockRequest()
 {
+	TryLockRequest r;
+		// now we read args for LockManager
+	if (read(p_request_, &r, sizeof(TryLockRequest)) == -1)
+		throw ERROR("Couldn't read trylock message from pipe", errno);
+	int result = lockManager_.tryLock(r, client_);
+	// TODO wysylac odpowiedz
 }
 
 void Listener::handleUnlockRequest()
 {
+	UnlockRequest r;
+		// now we read args for LockManager
+	if (read(p_request_, &r, sizeof(UnlockRequest)) == -1)
+		throw ERROR("Couldn't read unlock message from pipe", errno);
+	int result = lockManager_.unlock(r, client_);
+	// TODO wysylac odpowiedz
 }
+
 
 void *start_listener(void *ptr)
 {
 	// here starts new thread
-	Listener *listener = (Listener*) ((ptr));
+	Listener *listener = (Listener*) (((ptr)));
 	listener->start();
 	return NULL;
 }

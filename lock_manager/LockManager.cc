@@ -15,6 +15,18 @@ LockManager::LockManager()
 
 }
 
+int LockManager::lock(LockRequest r, pid_t pid)
+{
+}
+
+int LockManager::unlock(UnlockRequest r, pid_t pid)
+{
+}
+
+int LockManager::tryLock(TryLockRequest r, pid_t pid)
+{
+}
+
 LockManager::~LockManager()
 {
 }

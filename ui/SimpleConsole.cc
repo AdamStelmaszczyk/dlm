@@ -71,7 +71,7 @@ void SimpleConsole::callProc(const std::string &dst)
 	close(p_response[READ_DESC]);
 	close(p_request[WRITE_DESC]);
 	// start listener
-	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC]);
+	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lockManager_);
 	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
 }

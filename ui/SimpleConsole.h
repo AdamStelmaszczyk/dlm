@@ -42,6 +42,8 @@ private:
 	std::ostream& out_;
 	/** config object */
 	Config& config_;
+	/** lock manager for child process */
+	LockManager &lockManager_;
 };
 
 } /* namespace dlm */

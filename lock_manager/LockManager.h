@@ -11,7 +11,10 @@
 #define LOCKMANAGER_H_
 
 #include <queue>
-
+#include "LockRequest.h"
+#include "UnlockRequest.h"
+#include "TryLockRequest.h"
+#include "../api/dlm.h"
 #include "../resource/Resource.h"
 
 namespace dlm
@@ -20,9 +23,18 @@ namespace dlm
 class LockManager
 {
 public:
-	/// TYPEDEFS
-	typedef unsigned int rid_t;
-	void lock(int resource_id, int lock_type, long timeout);
+
+	/**
+	 * locks resource for specified process
+	 *
+	 * @param r - request structure
+	 * @param process
+	 *
+	 * @return 0 - ok, != 0 - error
+	 */
+	int lock(LockRequest r, pid_t pid);
+	int unlock(UnlockRequest r, pid_t pid);
+	int tryLock(TryLockRequest r, pid_t pid);
 	LockManager();
 	virtual ~LockManager();
 private:
