@@ -44,7 +44,7 @@ void Config::readInput()
 
                     //trim
                     property = property.substr(property.find_first_not_of(' '), property.find_last_not_of(' ') + 1);
-                    value = value.substr(value.find_first_not_of(' '), value.find_last_not_of(' '));
+                    value = value.substr(value.find_first_not_of(' '), value.find_last_not_of(' ') + 1);
 
                     config_map[property] = value;
             }

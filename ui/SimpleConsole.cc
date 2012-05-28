@@ -64,6 +64,10 @@ void SimpleConsole::callProc(const std::string &dst)
 		char buff[256]; // converting descriptor number to cstring
 		sprintf(buff, "%d", p_request[WRITE_DESC]);
 		// lepiej uzyj execv
+		//testowanie opcji z plikiem konfiguracyjnym
+		//execl(config_.getValue("terminal").c_str(), config_.getValue("terminal").c_str(), "-e",
+				//dst.c_str(), buff, p_response[READ_DESC], p_request[WRITE_DESC],  (char*) 0);
+
 		// deskryptory na koncu argumentow powinny byc przekazywane
 		// w takiej kolejnosci jak jest teraz
 		execl(dst.c_str(), dst.c_str(), buff, p_response[READ_DESC], p_request[WRITE_DESC], (void*)0); // last two argvs should be pipe descriptors
