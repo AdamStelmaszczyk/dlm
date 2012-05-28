@@ -10,10 +10,11 @@
 #define ERROR_H_
 
 #include <exception>
+#include <errno.h>
 #include <cstdio>
 
 #define ERROR(a) Error((a), __FILE__, __LINE__)
-#define ERROR(a, errno_) Error((a), __FILE__, __LINE__, (errno_))
+#define ERROR2(a, errno_) Error((a), __FILE__, __LINE__, (errno_))
 
 namespace dlm
 {
@@ -44,7 +45,7 @@ public:
 				+ msg_
 				+ (errno != 0 ? std::string(" ERRNO: ") + std::string(err) : std::string(""))
 				;
-		return res;
+		return res.c_str();
 	}
 private:
 	/** errno value **/

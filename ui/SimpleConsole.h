@@ -10,6 +10,7 @@
 #define SIMPLECONSOLE_H_
 #include <iostream>
 #include <string>
+#include "../lock_manager/LockManager.h"
 #include "../config/Config.h"
 
 #define READ_DESC 0
@@ -21,7 +22,7 @@ namespace dlm
 class SimpleConsole
 {
 public:
-	SimpleConsole(std::istream &in, std::ostream &out, Config &config);
+	SimpleConsole(std::istream &in, std::ostream &out, Config &config, LockManager &lm);
 	virtual ~SimpleConsole();
 
 	/**

@@ -4,6 +4,7 @@
 #include "SimpleConsole.h"
 #include "../exceptions/Warning.h"
 #include "../exceptions/Error.h"
+#include "../exceptions/Warning.h"
 #include "../listener/Listener.h"
 #include "../logger/Logger.h"
 
@@ -12,8 +13,8 @@ using namespace std;
 namespace dlm
 {
 
-SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config) :
-		in_(in), out_(out), config_(config)
+SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config, LockManager &lm) :
+		in_(in), out_(out), config_(config),lockManager_(lm)
 {
 	Logger::getInstance().setOutputStream(out);
 }
@@ -63,7 +64,9 @@ void SimpleConsole::callProc(const std::string &dst)
 		char buff[256]; // converting descriptor number to cstring
 		sprintf(buff, "%d", p_request[WRITE_DESC]);
 		// lepiej uzyj execv
-		execl(dst.c_str(), dst.c_str(), buff, (char*) 0); // last two argvs should be pipe descriptors
+		// deskryptory na koncu argumentow powinny byc przekazywane
+		// w takiej kolejnosci jak jest teraz
+		execl(dst.c_str(), dst.c_str(), buff, p_response[READ_DESC], p_request[WRITE_DESC], (void*)0); // last two argvs should be pipe descriptors
 		throw WARNING("couldn't open exec file: " + dst);
 	}
 	else if (child_pid == -1)

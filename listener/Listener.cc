@@ -6,9 +6,9 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#include "LockRequest.h"
-#include "UnlockRequest.h"
-#include "TryLockRequest.h"
+#include "../lock_manager/LockRequest.h"
+#include "../lock_manager/UnlockRequest.h"
+#include "../lock_manager/TryLockRequest.h"
 #include "../api/dlm.h"
 #include "Listener.h"
 #include "../exceptions/Error.h"
@@ -34,7 +34,7 @@ void Listener::start()
 		{
 			// first of all, read request message header
 			if (read(p_request_, &request_type, 1) == -1)
-				throw ERROR("Couldn't read request message header", errno);
+				throw ERROR2("Couldn't read request message header", errno);
 			// if-else-if, grrr ...
 			if (request_type == 'l')
 				handleLockRequest();
@@ -66,36 +66,41 @@ void Listener::handleLockRequest()
 	LockRequest r;
 	// now we read args for LockManager
 	if (read(p_request_, &r, sizeof(LockRequest)) == -1)
-		throw ERROR("Couldn't read lock message from pipe", errno);
+		throw ERROR2("Couldn't read lock message from pipe", errno);
 	int result = lockManager_.lock(r, client_);
-	// TODO wysylac odpowiedz
+	sendResponse(result);
 }
 
 void Listener::handleTryLockRequest()
 {
 	TryLockRequest r;
-		// now we read args for LockManager
+	// now we read args for LockManager
 	if (read(p_request_, &r, sizeof(TryLockRequest)) == -1)
-		throw ERROR("Couldn't read trylock message from pipe", errno);
+		throw ERROR2("Couldn't read trylock message from pipe", errno);
 	int result = lockManager_.tryLock(r, client_);
-	// TODO wysylac odpowiedz
+	sendResponse(result);
 }
 
 void Listener::handleUnlockRequest()
 {
 	UnlockRequest r;
-		// now we read args for LockManager
+	// now we read args for LockManager
 	if (read(p_request_, &r, sizeof(UnlockRequest)) == -1)
-		throw ERROR("Couldn't read unlock message from pipe", errno);
+		throw ERROR2("Couldn't read unlock message from pipe", errno);
 	int result = lockManager_.unlock(r, client_);
-	// TODO wysylac odpowiedz
+	sendResponse(result);
 }
 
+void Listener::sendResponse(int result)
+{
+	if(write(p_response_, &result, sizeof(int)) == -1)
+		throw ERROR("Couldn't send resposne to client");
+}
 
 void *start_listener(void *ptr)
 {
 	// here starts new thread
-	Listener *listener = (Listener*) (((ptr)));
+	Listener *listener = (Listener*) ((((ptr))));
 	listener->start();
 	return NULL;
 }

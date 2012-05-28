@@ -9,6 +9,7 @@
 #ifndef LISTENER_H_
 #define LISTENER_H_
 
+#include "../lock_manager/LockManager.h"
 namespace dlm
 {
 void* start_listener(void *ptr);
@@ -26,6 +27,13 @@ private:
 	void handleLockRequest();
 	void handleTryLockRequest();
 	void handleUnlockRequest();
+
+	/**
+	 * Puts response to output pipe.
+	 *
+	 * @param result
+	 */
+	void sendResponse(int result);
 
 	/** pipe's for request (from client) and response (to client) */
 	int p_response_, p_request_;

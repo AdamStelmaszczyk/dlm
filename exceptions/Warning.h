@@ -11,11 +11,12 @@
 #include <exception>
 #include <cstdlib>
 #include <cstdio>
+#include <errno.h>
 #include <sstream>
 
 // macro to call warning with selected file and line number
 #define WARNING(a) Warning((a), __FILE__, __LINE__)
-#define WARNING(a, errno) Warning((a), __FILE__, __LINE__, (errno))
+#define WARNING2(a, errno) Warning((a), __FILE__, __LINE__, (errno))
 
 namespace dlm
 {

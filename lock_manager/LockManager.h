@@ -11,6 +11,7 @@
 #define LOCKMANAGER_H_
 
 #include <queue>
+#include <sys/types.h>
 #include "LockRequest.h"
 #include "UnlockRequest.h"
 #include "TryLockRequest.h"
