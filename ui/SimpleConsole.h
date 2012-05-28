@@ -21,7 +21,7 @@ namespace dlm
 class SimpleConsole
 {
 public:
-	SimpleConsole(std::istream &in, std::ostream &out);
+	SimpleConsole(std::istream &in, std::ostream &out, Config &config);
 	virtual ~SimpleConsole();
 
 	/**
@@ -41,6 +41,7 @@ private:
 	/** output stream */
 	std::ostream& out_;
 	/** config object */
+	Config& config_;
 };
 
 } /* namespace dlm */

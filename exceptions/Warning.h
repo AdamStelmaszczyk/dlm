@@ -11,6 +11,7 @@
 #include <exception>
 #include <cstdlib>
 #include <cstdio>
+#include <sstream>
 
 // macro to call warning with selected file and line number
 #define WARNING(a) Warning((a), __FILE__, __LINE__)
@@ -34,8 +35,12 @@ public:
 	{
 		char line_no[256];
 		sprintf(line_no, "%d", lineNumber_);
-		return (std::string("FILE ") + file_ + std::string(",") +
-				std::string(line_no) + std::string(" : ") + msg_).c_str();
+
+		//this hack resolves the problem with disappearing error messages
+		std::string res = "";
+		res += std::string("FILE ") + file_ + std::string(",") +
+				std::string(line_no) + std::string(" : ") + msg_;
+		return res.c_str();
 	}
 private:
 	/** warning message */

@@ -12,8 +12,8 @@ using namespace std;
 namespace dlm
 {
 
-SimpleConsole::SimpleConsole(istream &in, ostream &out) :
-		in_(in), out_(out)
+SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config) :
+		in_(in), out_(out), config_(config)
 {
 	Logger::getInstance().setOutputStream(out);
 }

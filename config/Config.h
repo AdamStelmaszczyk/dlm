@@ -28,8 +28,7 @@ public:
 private:
 	/** Map of property-value pairs*/
 	std::map<std::string,std::string> config_map;
-	std::string filename_;
-	std::string line;
+	const std::string& filename_;
 };
 }
 
