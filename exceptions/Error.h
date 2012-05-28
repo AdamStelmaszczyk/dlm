@@ -13,14 +13,15 @@
 #include <cstdio>
 
 #define ERROR(a) Error((a), __FILE__, __LINE__)
+#define ERROR(a, errno_) Error((a), __FILE__, __LINE__, (errno_))
 
 namespace dlm
 {
 class Error: public std::exception
 {
 public:
-	Error(const std::string &msg, const std::string &file, unsigned line_no) :
-			msg_(msg), file_(file), lineNumber_(line_no)
+	Error(const std::string &msg, const std::string &file, unsigned line_no, int err_num = 0) :
+			msg_(msg), file_(file), lineNumber_(line_no), errno_(err_num)
 	{
 	}
 
@@ -30,12 +31,24 @@ public:
 
 	virtual const char* what() const throw ()
 	{
-		char line_no[256];
+		char line_no[256], err[256]; // line number; errno
 		sprintf(line_no, "%d", lineNumber_);
-		return (std::string("FILE ") + file_ + std::string(",") +
-						std::string(line_no) + std::string(" : ") + msg_).c_str();
+		if(errno != 0) // errno == 0 means: no error
+			sprintf(err, "%d", errno_);
+		std::string res("");
+		res += std::string("ERROR - FILE ")
+				+ file_
+				+ std::string(", ")
+				+ std::string(line_no)
+				+ std::string(" : ")
+				+ msg_
+				+ (errno != 0 ? std::string(" ERRNO: ") + std::string(err) : std::string(""))
+				;
+		return res;
 	}
 private:
+	/** errno value **/
+	int errno_;
 	/** warning message */
 	std::string msg_;
 	/** file where message was called */

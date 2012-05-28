@@ -20,6 +20,11 @@ public:
 	void start();
 	virtual ~Listener();
 private:
+
+	void handleLockRequest();
+	void handleTryLockRequest();
+	void handleUnlockRequest();
+
 	/** pipe's for request (from client) and response (to client) */
 	int p_response_, p_request_;
 

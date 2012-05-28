@@ -15,6 +15,7 @@
 
 // macro to call warning with selected file and line number
 #define WARNING(a) Warning((a), __FILE__, __LINE__)
+#define WARNING(a, errno) Warning((a), __FILE__, __LINE__, (errno))
 
 namespace dlm
 {
@@ -22,8 +23,8 @@ namespace dlm
 class Warning: public std::exception
 {
 public:
-	Warning(const std::string &msg, const std::string &file, unsigned line_no) :
-			msg_(msg), file_(file), lineNumber_(line_no)
+	Warning(const std::string &msg, const std::string &file, unsigned line_no, int err_num = 0) :
+			msg_(msg), file_(file), lineNumber_(line_no), errno_(err_num)
 	{
 	}
 
@@ -33,16 +34,25 @@ public:
 
 	virtual const char* what() const throw ()
 	{
-		char line_no[256];
+		char line_no[256], err[256]; // line number; errno
 		sprintf(line_no, "%d", lineNumber_);
-
+		if(errno != 0) // errno == 0 means: no error
+			sprintf(err, "%d", errno_);
 		//this hack resolves the problem with disappearing error messages
 		std::string res = "";
-		res += std::string("FILE ") + file_ + std::string(",") +
-				std::string(line_no) + std::string(" : ") + msg_;
+		res +=  std::string("WARNING - FILE ")
+				+ file_
+				+ std::string(",")
+				+ std::string(line_no)
+				+ std::string(" : ")
+				+ msg_
+				+ (errno != 0 ? std::string(" ERRNO: ") + std::string(err) : std::string(""))
+				;
 		return res.c_str();
 	}
 private:
+	/** error number */
+	int errno_;
 	/** warning message */
 	std::string msg_;
 	/** file where message was called */
