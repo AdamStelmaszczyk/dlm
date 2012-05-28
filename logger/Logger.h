@@ -32,16 +32,6 @@ public:
 	 * @param message
 	 */
 	void log(const std::string& message);
-	/**
-	 * Logs message connected with execution of a function. Includes file name, function name and line number
-	 * Use __FILE__, __FUNCTION__, __LINE__ to obtain necessary values
-	 *
-	 * @param filename
-	 * @param function
-	 * @param line_number
-	 * @param message
-	 */
-	void log(const char* filename, const char* function, size_t line_number, const std::string& message);
 private:
 	Logger(){}
 	Logger(const Logger&);
