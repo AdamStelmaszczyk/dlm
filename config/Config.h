@@ -24,9 +24,12 @@ public:
 	 * @param property_name
 	 */
 	std::string getValue(const std::string& property_name) const;
+	void readInput();
 private:
 	/** Map of property-value pairs*/
 	std::map<std::string,std::string> config_map;
+	std::string filename_;
+	std::string line;
 };
 }
 
