@@ -4,7 +4,6 @@
  * @class Cleaner
  * @brief Cleans after child processes - stops listnener thread and cleans
  * locks in dlm.
- * He also handles all signals.
  * @date 29-05-2012
  */
 
@@ -21,7 +20,7 @@ namespace dlm
 Cleaner::Cleaner(LockManager &lm):
 	lm_(lm)
 {
-	procs_mutex_ = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_init(&procs_mutex_, NULL);
 }
 
 void Cleaner::start()
@@ -38,6 +37,7 @@ void Cleaner::start()
 		if(si_code == CLD_EXITED || si_code == CLD_KILLED || si_code == CLD_DUMPED)
 		{ // we ommit trapped and stopped child processes
 			pid_t pid = wait(NULL); // get pid of terminated process
+			//std::cout << "proces " << pid << " sie skonczyl" << std::endl;
 			removeClient(pid);
 		}
 	}
