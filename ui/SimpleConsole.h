@@ -12,6 +12,7 @@
 #include <string>
 #include "../lock_manager/LockManager.h"
 #include "../config/Config.h"
+#include "../listener/Cleaner.h"
 
 #define READ_DESC 0
 #define WRITE_DESC 1
@@ -45,6 +46,8 @@ private:
 	Config& config_;
 	/** lock manager for child process */
 	LockManager &lockManager_;
+	/** cleaner to cleanup after dead childs */
+	Cleaner cleaner_;
 };
 
 } /* namespace dlm */

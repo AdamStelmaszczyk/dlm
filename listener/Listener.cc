@@ -47,7 +47,6 @@ void Listener::start()
 				handleTryLockRequest();
 			else if (request_type == 'u')
 				handleUnlockRequest();
-
 		}
 		catch (const Warning &e)
 		{
@@ -106,6 +105,7 @@ void Listener::sendResponse(int result)
 void *start_listener(void *ptr)
 {
 	// here starts new thread
+	pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 	Listener *listener = (Listener*) ((((ptr))));
 	listener->start();
 	return NULL;

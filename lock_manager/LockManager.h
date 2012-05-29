@@ -37,6 +37,14 @@ public:
 	int unlock(UnlockRequest unlock_request, pid_t pid);
 	int tryLock(TryLockRequest trylock_request, pid_t pid);
 	LockManager();
+
+	/**
+	 * removes any information (from accepted and blocked locks queues)
+	 * about that process.
+	 *
+	 * @param pid - pid of process
+	 */
+	void cleanup(pid_t pid);
 	virtual ~LockManager();
 };
 

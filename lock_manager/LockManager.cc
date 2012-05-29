@@ -20,10 +20,8 @@ LockManager::LockManager()
 
 int LockManager::lock(LockRequest r, pid_t pid)
 {
-	cout << "proces " << pid << " wykonuje locka na zasob "
-		 << r.resource_ << " rodzaj locka: "
-		 << r.locktype_ << " timeout "
-		 << r.timeout_  << endl;
+	cout << "proces " << pid << " wykonuje locka na zasob " << r.resource_ << " rodzaj locka: " << r.locktype_ << " timeout " << r.timeout_
+			<< endl;
 	return 0;
 }
 
@@ -35,6 +33,10 @@ int LockManager::unlock(UnlockRequest r, pid_t pid)
 int LockManager::tryLock(TryLockRequest r, pid_t pid)
 {
 	return 0;
+}
+
+void LockManager::cleanup(pid_t pid)
+{
 }
 
 LockManager::~LockManager()

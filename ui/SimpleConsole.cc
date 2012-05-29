@@ -14,9 +14,10 @@ namespace dlm
 {
 
 SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config, LockManager &lm) :
-		in_(in), out_(out), config_(config),lockManager_(lm)
+		in_(in), out_(out), config_(config),lockManager_(lm), cleaner_(lm)
 {
 	Logger::getInstance().setOutputStream(out);
+	cleaner_.start();
 }
 
 SimpleConsole::~SimpleConsole()
@@ -82,6 +83,7 @@ void SimpleConsole::callProc(const std::string &dst)
 	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lockManager_);
 	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
+	cleaner_.addClient(child_pid, thread);
 }
 
 } /* namespace dlm */
