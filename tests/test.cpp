@@ -7,11 +7,12 @@
  */
 #include <unistd.h>
 #include <cstdlib>
+#include <iostream>
 #include "../api/dlm.h"
 
 int main(int argc, char **argv)
 {
 	DLM_init(argc, argv);
-	DLM_lock(1, LockType::CR, 1000);
+	DLM_lock(1, CR, 1000);
 }
 

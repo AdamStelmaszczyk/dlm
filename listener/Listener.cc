@@ -28,13 +28,17 @@ Listener::Listener(int p_response, int p_request, pid_t client, LockManager& lm)
 void Listener::start()
 {
 	char request_type = 0;
+	unsigned size = 0;
+	Logger::getInstance().log("new instance of process");
 	while (1)
 	{
 		try
 		{
 			// first of all, read request message header
-			if (read(p_request_, &request_type, 1) == -1)
+			while((size = read(p_request_, &request_type, sizeof(request_type))) == 0);
+			if(size == 0)
 				throw ERROR2("Couldn't read request message header", errno);
+			Logger::getInstance().log("got new message from process");
 			// if-else-if, grrr ...
 			if (request_type == 'l')
 				handleLockRequest();
@@ -52,9 +56,10 @@ void Listener::start()
 		catch (const Error &e)
 		{
 			Logger::getInstance().log(e.what());
-			pthread_exit(NULL); // error stops that thread
+			break;
 		}
 	}
+	Logger::getInstance().log("listener stoped");
 }
 
 Listener::~Listener()

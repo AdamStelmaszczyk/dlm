@@ -37,11 +37,10 @@ private:
 
 	/** pipe's for request (from client) and response (to client) */
 	int p_response_, p_request_;
-	/** reference to lock manager providing dlm functions */
-	LockManager &lockManager_;
 	/** pid of child process (client) communicatig with this listner */
 	pid_t client_;
-
+	/** reference to lock manager providing dlm functions */
+	LockManager &lockManager_;
 	friend void* start_listener(void *ptr);
 };
 

@@ -18,8 +18,10 @@ LockManager::LockManager()
 
 int LockManager::lock(LockRequest r, pid_t pid)
 {
-	std::cout << "proces " << pid << "wykonuje locka na zasob "
-			  << r.resource_ << std::endl;
+	std::cout << "proces " << pid << " wykonuje locka na zasob "
+			  << r.resource_ << " rodzaj locka: "
+			  << r.locktype_ << " timeout "
+			  << r.timeout_<< std::endl;
 }
 
 int LockManager::unlock(UnlockRequest r, pid_t pid)

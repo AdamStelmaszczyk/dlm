@@ -61,8 +61,9 @@ void SimpleConsole::callProc(const std::string &dst)
 	{
 		close(p_response[WRITE_DESC]);
 		close(p_request[READ_DESC]);
-		char buff[256]; // converting descriptor number to cstring
-		sprintf(buff, "%d", p_request[WRITE_DESC]);
+		char buff1[256], buff2[256]; // converting descriptor number to cstring
+		sprintf(buff1, "%d", p_request[WRITE_DESC]);
+		sprintf(buff2, "%d", p_response[READ_DESC]);
 		// lepiej uzyj execv
 		//testowanie opcji z plikiem konfiguracyjnym
 		//execl(config_.getValue("terminal").c_str(), config_.getValue("terminal").c_str(), "-e",
@@ -70,8 +71,8 @@ void SimpleConsole::callProc(const std::string &dst)
 
 		// deskryptory na koncu argumentow powinny byc przekazywane
 		// w takiej kolejnosci jak jest teraz
-		execl(dst.c_str(), dst.c_str(), buff, p_response[READ_DESC], p_request[WRITE_DESC], (void*)0); // last two argvs should be pipe descriptors
-		throw WARNING("couldn't open exec file: " + dst);
+		execl(dst.c_str(), dst.c_str(), buff2, buff1, (void*)0); // last two argvs should be pipe descriptors
+		throw WARNING2("couldn't open exec file: " + dst, errno);
 	}
 	else if (child_pid == -1)
 		throw WARNING("couldn't create child process");
