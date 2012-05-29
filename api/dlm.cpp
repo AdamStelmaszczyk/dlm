@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <unistd.h>
 
+#include "dlm.h"
+#include "../lock_manager/LockRequest.h"
 #include "../lock_manager/UnlockRequest.h"
 #include "../lock_manager/TryLockRequest.h"
 
