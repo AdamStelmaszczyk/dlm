@@ -22,7 +22,7 @@ void Logger::log(const char* format, ... )
     vsprintf(buffer, format, argptr);
     va_end(argptr);
 
-    *output_stream << buffer;
+    *output_stream << buffer << std::endl;
 }
 
 }

@@ -30,7 +30,7 @@ SimpleConsole::~SimpleConsole()
 void SimpleConsole::start()
 {
 	string instr;
-	Logger::getInstance().log("dlm console started\n");
+	Logger::getInstance().log("dlm console started");
 	while (in_)
 	{
 		try
