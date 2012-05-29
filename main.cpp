@@ -17,7 +17,6 @@ int main()
 	sigemptyset(&sigs_to_block);
 	sigaddset(&sigs_to_block, SIGCHLD);
 	pthread_sigmask(SIG_BLOCK, &sigs_to_block, NULL);
-
 	SimpleConsole console(cin, cout, config, lm);
 	console.start();
 

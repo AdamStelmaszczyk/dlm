@@ -14,20 +14,23 @@ namespace dlm
 {
 
 SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config, LockManager &lm) :
-		in_(in), out_(out), config_(config),lockManager_(lm), cleaner_(lm)
+		in_(in), out_(out), config_(config),lockManager_(lm)
 {
 	Logger::getInstance().setOutputStream(out);
-	cleaner_.start();
+	pthread_t t;
+	cleaner_ = new Cleaner(lm);
+	pthread_create(&t, NULL, &start_cleaner, (void*)cleaner_);
 }
 
 SimpleConsole::~SimpleConsole()
 {
+	delete cleaner_;
 }
 
 void SimpleConsole::start()
 {
 	string instr;
-
+	Logger::getInstance().log("dlm console started\n");
 	while (in_)
 	{
 		try
@@ -80,10 +83,10 @@ void SimpleConsole::callProc(const std::string &dst)
 	close(p_response[READ_DESC]);
 	close(p_request[WRITE_DESC]);
 	// start listener
-	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lockManager_);
+	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lockManager_); // FIXME memory leak
 	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
-	cleaner_.addClient(child_pid, thread);
+	cleaner_->addClient(child_pid, thread);
 }
 
 } /* namespace dlm */

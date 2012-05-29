@@ -9,6 +9,7 @@
 
 #include "Cleaner.h"
 #include <sys/types.h>
+#include <iostream>
 #include <sys/wait.h>
 #include <signal.h>
 
@@ -37,7 +38,7 @@ void Cleaner::start()
 		if(si_code == CLD_EXITED || si_code == CLD_KILLED || si_code == CLD_DUMPED)
 		{ // we ommit trapped and stopped child processes
 			pid_t pid = wait(NULL); // get pid of terminated process
-			//std::cout << "proces " << pid << " sie skonczyl" << std::endl;
+			std::cout << "proces " << pid << " sie skonczyl" << std::endl;
 			removeClient(pid);
 		}
 	}

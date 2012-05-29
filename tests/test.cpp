@@ -12,6 +12,7 @@
 
 int main(int argc, char **argv)
 {
+	std::cout << "proces potomny" << std::endl;
 	DLM_init(argc, argv);
 	DLM_lock(1, CR, 1000);
 }

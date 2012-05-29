@@ -47,7 +47,7 @@ private:
 	/** lock manager for child process */
 	LockManager &lockManager_;
 	/** cleaner to cleanup after dead childs */
-	Cleaner cleaner_;
+	Cleaner* cleaner_;
 };
 
 } /* namespace dlm */
