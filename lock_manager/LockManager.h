@@ -12,6 +12,7 @@
 
 #include <queue>
 #include <sys/types.h>
+
 #include "LockRequest.h"
 #include "UnlockRequest.h"
 #include "TryLockRequest.h"
@@ -24,23 +25,21 @@ namespace dlm
 class LockManager
 {
 public:
-
 	/**
-	 * locks resource for specified process
+	 * Locks resource for specified process.
 	 *
-	 * @param r - request structure
-	 * @param process
+	 * @param lock_request Request structure.
+	 * @param pid Process Identifier, PID.
 	 *
-	 * @return 0 - ok, != 0 - error
+	 * @return If 0 - ok, otherwise - error.
 	 */
-	int lock(LockRequest r, pid_t pid);
-	int unlock(UnlockRequest r, pid_t pid);
-	int tryLock(TryLockRequest r, pid_t pid);
+	int lock(LockRequest lock_request, pid_t pid);
+	int unlock(UnlockRequest unlock_request, pid_t pid);
+	int tryLock(TryLockRequest trylock_request, pid_t pid);
 	LockManager();
 	virtual ~LockManager();
-private:
-
 };
 
-} /* namespace dlm */
+}
+
 #endif /* LOCKMANAGER_H_ */
