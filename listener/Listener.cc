@@ -1,4 +1,4 @@
-// TODO obsluga sygnalow SIG_CHLD i podobnych
+// TODO obsluga sygnalow SIG_CHLD i podobnych - chyba juz zrobione mozna skasowac?
 
 #include <pthread.h>
 #include <iostream>
@@ -6,14 +6,14 @@
 #include <errno.h>
 #include <sys/types.h>
 
+#include "Listener.h"
+#include "../api/dlm.h"
+#include "../logger/Logger.h"
+#include "../exceptions/Error.h"
+#include "../exceptions/Warning.h"
 #include "../lock_manager/LockRequest.h"
 #include "../lock_manager/UnlockRequest.h"
 #include "../lock_manager/TryLockRequest.h"
-#include "../api/dlm.h"
-#include "Listener.h"
-#include "../exceptions/Error.h"
-#include "../exceptions/Warning.h"
-#include "../logger/Logger.h"
 
 using namespace std;
 
@@ -29,7 +29,7 @@ void Listener::start()
 {
 	char request_type = 0;
 	unsigned size = 0;
-	Logger::getInstance().log("[%s]","new instance of process");
+	Logger::getInstance().log("[%s]", "new instance of process");
 	while (1)
 	{
 		try
@@ -38,19 +38,27 @@ void Listener::start()
 			while ((size = read(p_request_, &request_type, sizeof(request_type))) == 0)
 				;
 			if (size == 0)
+			{
 				throw ERROR2("Couldn't read request message header", errno);
-			Logger::getInstance().log("[%s]","got new message from process");
-			// if-else-if, grrr ...
-			if (request_type == 'l')
-				handleLockRequest();
-			else if (request_type == 't')
-				handleTryLockRequest();
-			else if (request_type == 'u')
-				handleUnlockRequest();
+			}
+			Logger::getInstance().log("[%s]", "got new message from process");
+
+			switch (request_type)
+			{
+				case 'l':
+					handleLockRequest();
+					break;
+				case 't':
+					handleTryLockRequest();
+					break;
+				case 'u':
+					handleUnlockRequest();
+					break;
+			}
 		}
-		catch (const Warning &e)
+		catch (const Warning &w)
 		{
-			Logger::getInstance().log(e.what());
+			Logger::getInstance().log(w.what());
 			continue;
 		}
 		catch (const Error &e)
@@ -59,7 +67,7 @@ void Listener::start()
 			break;
 		}
 	}
-	Logger::getInstance().log("[%s]","listener stoped");
+	Logger::getInstance().log("[%s]", "listener stopped");
 }
 
 Listener::~Listener()
@@ -68,41 +76,49 @@ Listener::~Listener()
 
 void Listener::handleLockRequest()
 {
-	LockRequest r;
+	LockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &r, sizeof(LockRequest)) == -1)
+	if (read(p_request_, &request, sizeof(LockRequest)) == -1)
+	{
 		throw ERROR2("Couldn't read lock message from pipe", errno);
-	int result = lockManager_.lock(r, client_);
+	}
+	int result = lockManager_.lock(request, client_);
 	sendResponse(result);
 }
 
 void Listener::handleTryLockRequest()
 {
-	TryLockRequest r;
+	TryLockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &r, sizeof(TryLockRequest)) == -1)
+	if (read(p_request_, &request, sizeof(TryLockRequest)) == -1)
+	{
 		throw ERROR2("Couldn't read trylock message from pipe", errno);
-	int result = lockManager_.tryLock(r, client_);
+	}
+	int result = lockManager_.tryLock(request, client_);
 	sendResponse(result);
 }
 
 void Listener::handleUnlockRequest()
 {
-	UnlockRequest r;
+	UnlockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &r, sizeof(UnlockRequest)) == -1)
+	if (read(p_request_, &request, sizeof(UnlockRequest)) == -1)
+	{
 		throw ERROR2("Couldn't read unlock message from pipe", errno);
-	int result = lockManager_.unlock(r, client_);
+	}
+	int result = lockManager_.unlock(request, client_);
 	sendResponse(result);
 }
 
 void Listener::sendResponse(int result)
 {
 	if (write(p_response_, &result, sizeof(int)) == -1)
-		throw ERROR("Couldn't send resposne to client");
+	{
+		throw ERROR("Couldn't respond to client");
+	}
 }
 
-void *start_listener(void *ptr)
+void* start_listener(void *ptr)
 {
 	// here starts new thread
 	pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
@@ -111,6 +127,4 @@ void *start_listener(void *ptr)
 	return NULL;
 }
 
-/* namespace dlm */
 }
-
