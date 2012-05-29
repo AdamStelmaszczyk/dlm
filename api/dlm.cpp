@@ -1,26 +1,28 @@
-#include "dlm.h"
-#include "../lock_manager/LockRequest.h"
-#include "../lock_manager/UnlockRequest.h"
-#include "../lock_manager/TryLockRequest.h"
 #include <cstdio>
 #include <iostream>
 #include <cstdlib>
 #include <unistd.h>
 
-// p_request - here client puts requests
-// p_response - here client puts responses
-int p_request = 0, p_response = 0;
+#include "../lock_manager/UnlockRequest.h"
+#include "../lock_manager/TryLockRequest.h"
+
+int p_request = 0;	// pipe descriptor number where client puts requests
+int p_response = 0; // pipe descriptor number where client puts responses
 
 using namespace dlm;
 
 int DLM_init(int argc, char **argv)
 {
-	if(argc < 3)
+	if (argc < 3)
+	{
 		return -1; // TODO errno
-	p_response = atoi(argv[argc-2]);
-	p_request = atoi(argv[argc-1]);
-	if(!p_request || !p_response)
+	}
+	p_response = atoi(argv[argc - 2]);
+	p_request = atoi(argv[argc - 1]);
+	if (!p_request || !p_response)
+	{
 		return -1; // TODO errno
+	}
 	return 0;
 }
 
@@ -33,19 +35,27 @@ int DLM_init(int argc, char **argv)
 template<typename T>
 int sendMesage(char instr_type, T data)
 {
+	LockRequest lock_request;
 	// write request type to pipe
-	if(!p_request || !p_response)
+	if (!p_request || !p_response)
+	{
 		return -1; // TODO errno - DLM niezainicjowany
-	if(write(p_request, &instr_type, sizeof(instr_type)) == -1) // TODO ciagnac w petli while az zapisze wszystko
+	}
+	if (write(p_request, &instr_type, sizeof(instr_type)) == -1) // TODO ciagnac w petli while az zapisze wszystko
+	{
 		return -1; // TODO errno
-	if(write(p_request, &data, sizeof(T)) == -1) // TODO ciagnac w petli while az zapisze wszystko
+	}
+	if (write(p_request, &lock_request, sizeof(lock_request)) == -1) // TODO ciagnac w petli while az zapisze wszystko
+	{
 		return -1; // TODO errno
+	}
 	// read response from pipe
 	int result;
-	if(read(p_response, &result, sizeof(result)) == -1)
+	if (read(p_response, &result, sizeof(result)) == -1)
+	{
 		return -1; // TODO errno
+	}
 	return result;
-
 }
 
 int DLM_init_file_resource(char** dest)
@@ -77,7 +87,3 @@ int DLM_trylock(rid_t resource_id, LockType lock_type)
 	try_request.lockType_ = lock_type;
 	return sendMesage('t', try_request);
 }
-
-
-
-
