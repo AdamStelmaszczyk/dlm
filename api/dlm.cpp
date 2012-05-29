@@ -6,7 +6,7 @@
 #include "../lock_manager/UnlockRequest.h"
 #include "../lock_manager/TryLockRequest.h"
 
-int p_request = 0;	// pipe descriptor number where client puts requests
+int p_request = 0; // pipe descriptor number where client puts requests
 int p_response = 0; // pipe descriptor number where client puts responses
 
 using namespace dlm;
@@ -35,7 +35,6 @@ int DLM_init(int argc, char **argv)
 template<typename T>
 int sendMesage(char instr_type, T data)
 {
-	LockRequest lock_request;
 	// write request type to pipe
 	if (!p_request || !p_response)
 	{
@@ -45,7 +44,7 @@ int sendMesage(char instr_type, T data)
 	{
 		return -1; // TODO errno
 	}
-	if (write(p_request, &lock_request, sizeof(lock_request)) == -1) // TODO ciagnac w petli while az zapisze wszystko
+	if (write(p_request, &data, sizeof(T)) == -1) // TODO ciagnac w petli while az zapisze wszystko
 	{
 		return -1; // TODO errno
 	}
