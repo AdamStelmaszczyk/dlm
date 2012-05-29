@@ -22,7 +22,7 @@ class Error: public std::exception
 {
 public:
 	Error(const std::string &msg, const std::string &file, unsigned line_no, int err_num = 0) :
-			msg_(msg), file_(file), lineNumber_(line_no), errno_(err_num)
+		errno_(err_num), msg_(msg), file_(file), lineNumber_(line_no)
 	{
 	}
 
