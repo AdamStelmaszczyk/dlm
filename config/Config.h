@@ -1,14 +1,17 @@
 /**
  * Config.h
- * @class Console
+ * @class Config
  * @brief Provides configuration file handling
  * @date 27-05-2012
  */
 
 #ifndef CONFIG_H_
 #define CONFIG_H_
+
 #include <string>
 #include <map>
+
+#define SEPARATOR '='
 
 namespace dlm
 {
@@ -16,20 +19,22 @@ namespace dlm
 class Config
 {
 public:
-	Config(const std::string& filename);
+	Config(const std::string filename);
 	virtual ~Config();
 	/**
-	 * Returns property value
+	 * Returns given property value.
 	 *
-	 * @param property_name
+	 * @param property_name Name of the property.
 	 */
 	std::string getValue(const std::string& property_name) const;
-	void readInput();
 private:
 	/** Map of property-value pairs*/
-	std::map<std::string,std::string> config_map;
-	const std::string& filename_;
+	std::map<std::string, std::string> config_map;
+	const std::string FILENAME;
+
+	void readInput();
 };
+
 }
 
 #endif /* CONFIG_H_ */

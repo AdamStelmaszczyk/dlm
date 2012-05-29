@@ -1,16 +1,19 @@
-#include "ui/SimpleConsole.h"
-#include "config/Config.h"
-#include "lock_manager/LockManager.h"
 #include <iostream>
+
+#include "config/Config.h"
+#include "ui/SimpleConsole.h"
+#include "lock_manager/LockManager.h"
+
+using namespace std;
+using namespace dlm;
 
 int main()
 {
-	dlm::Config config(dlm::Config("config.cfg"));
-	config.readInput();
+	Config config("config.cfg");
 
-	dlm::LockManager lm;
+	LockManager lm;
 
-	dlm::SimpleConsole console(std::cin, std::cout, config, lm);
+	SimpleConsole console(cin, cout, config, lm);
 	console.start();
 
 	return 0;

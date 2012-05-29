@@ -35,8 +35,9 @@ void Listener::start()
 		try
 		{
 			// first of all, read request message header
-			while((size = read(p_request_, &request_type, sizeof(request_type))) == 0);
-			if(size == 0)
+			while ((size = read(p_request_, &request_type, sizeof(request_type))) == 0)
+				;
+			if (size == 0)
 				throw ERROR2("Couldn't read request message header", errno);
 			Logger::getInstance().log("got new message from process");
 			// if-else-if, grrr ...
@@ -98,7 +99,7 @@ void Listener::handleUnlockRequest()
 
 void Listener::sendResponse(int result)
 {
-	if(write(p_response_, &result, sizeof(int)) == -1)
+	if (write(p_response_, &result, sizeof(int)) == -1)
 		throw ERROR("Couldn't send resposne to client");
 }
 

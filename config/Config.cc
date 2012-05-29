@@ -1,58 +1,60 @@
-#include "Config.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
+#include "Config.h"
+
 using namespace std;
+
 namespace dlm
 {
-Config::Config(const std::string& filename) : filename_(filename)
-{
 
+Config::Config(const std::string filename) :
+		FILENAME(filename)
+{
+	readInput();
 }
 
 Config::~Config()
 {
-
 }
 
 std::string Config::getValue(const std::string& property_name) const
 {
-	if(config_map.count(property_name) > 0)
+	map<string, string>::const_iterator iterator = config_map.find(property_name);
+	if (iterator == config_map.end())
 	{
-		return config_map.find(property_name)->second;
+		return "NO SUCH PROPERTY KEY";
 	}
-	else
-	{
-		return "";
-	}
+	return iterator->second;
 }
 
 void Config::readInput()
 {
-    std::string line;
-    std::ifstream config_file(filename_.c_str());
+	std::string line;
+	std::ifstream config_file(FILENAME.c_str());
 
-    if(config_file.is_open())
-    {
-            while(getline(config_file, line))
-            {
-                    size_t pos = line.find(':');
+	if (!config_file.is_open())
+	{
+		cout << "CAN'T OPEN CONFIG FILE NAMED " << FILENAME << endl;
+		return;
+	}
 
-                    std::string property = line.substr(0, pos);
-                    std::string value = line.substr(pos + 1, line.length());
+	while (getline(config_file, line))
+	{
+		size_t pos = line.find(SEPARATOR);
 
-                    //trim
-                    property = property.substr(property.find_first_not_of(' '), property.find_last_not_of(' ') + 1);
-                    value = value.substr(value.find_first_not_of(' '), value.find_last_not_of(' ') + 1);
+		std::string property = line.substr(0, pos);
+		std::string value = line.substr(pos + 1, line.length());
 
-                    config_map[property] = value;
-            }
+		// trim
+		property = property.substr(property.find_first_not_of(' '), property.find_last_not_of(' ') + 1);
+		value = value.substr(value.find_first_not_of(' '), value.find_last_not_of(' ') + 1);
 
-    }
+		config_map[property] = value;
+	}
 
-    config_file.close();
-
+	config_file.close();
 }
 
 }
