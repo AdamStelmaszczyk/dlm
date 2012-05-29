@@ -36,12 +36,12 @@ void SimpleConsole::start()
 		}
 		catch (const Warning &e)
 		{
-			Logger::getInstance().log(e.what());
+			Logger::getInstance().log("[%s]",e.what());
 			continue; // Warnings shows only message, but shouldn't kill dlm
 		}
 		catch (const std::exception &e)
 		{ // other exceptions - here is also Error
-			Logger::getInstance().log(e.what());
+			Logger::getInstance().log("[%s]",e.what());
 			exit(-1); // we don't know what to do, let's kill him (dlm)
 		}
 	}

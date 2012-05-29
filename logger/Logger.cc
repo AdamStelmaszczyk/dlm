@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include <cstdio>
 
 namespace dlm
 {
@@ -13,9 +14,15 @@ void Logger::setOutputStream(std::ostream& output)
 	output_stream = &output;
 }
 
-void Logger::log(const std::string& message)
+void Logger::log(const char* format, ... )
 {
-	*output_stream << "[" << message  << "]" << std::endl;
+	char buffer[1024];
+    va_list argptr;
+    va_start(argptr, format);
+    vsprintf(buffer, format, argptr);
+    va_end(argptr);
+
+    *output_stream << buffer;
 }
 
 }

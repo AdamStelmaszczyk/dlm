@@ -10,6 +10,7 @@
 #include <ostream>
 #include <iostream>
 #include <string>
+#include <cstdarg>
 
 namespace dlm
 {
@@ -27,11 +28,10 @@ public:
 	 */
 	void setOutputStream(std::ostream& output);
 	/**
-	 * Logs plain message
+	 * Logs message, uses variable argument list to provide flexible logging
 	 *
-	 * @param message
 	 */
-	void log(const std::string& message);
+	void log(const char* format, ...);
 private:
 	Logger(){}
 	Logger(const Logger&);

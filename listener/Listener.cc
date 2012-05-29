@@ -29,7 +29,7 @@ void Listener::start()
 {
 	char request_type = 0;
 	unsigned size = 0;
-	Logger::getInstance().log("new instance of process");
+	Logger::getInstance().log("[%s]","new instance of process");
 	while (1)
 	{
 		try
@@ -39,7 +39,7 @@ void Listener::start()
 				;
 			if (size == 0)
 				throw ERROR2("Couldn't read request message header", errno);
-			Logger::getInstance().log("got new message from process");
+			Logger::getInstance().log("[%s]","got new message from process");
 			// if-else-if, grrr ...
 			if (request_type == 'l')
 				handleLockRequest();
@@ -60,7 +60,7 @@ void Listener::start()
 			break;
 		}
 	}
-	Logger::getInstance().log("listener stoped");
+	Logger::getInstance().log("[%s]","listener stoped");
 }
 
 Listener::~Listener()
