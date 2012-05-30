@@ -17,6 +17,6 @@ using namespace std;
 int main(int argc, char **argv)
 {
 	DLM_init(argc, argv);
-	DLM_lock(1, EX, 5000);
+	DLM_lock(1, EX, 2000);
 	sleep(5);
 }

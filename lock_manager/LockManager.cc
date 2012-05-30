@@ -60,18 +60,20 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		struct timeval now;
 		struct timespec timeout;
 		gettimeofday(&now, NULL);
-		timeout.tv_sec = now.tv_sec + request.timeout / 1000;
-		timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
+		// 1 s = 10^3 milliseconds = 10^6 microseconds = 10^9 nanoseconds
+		timeout.tv_sec = now.tv_sec + (request.timeout / 1000);
+		timeout.tv_nsec = 1000 * now.tv_usec;
 
 		WaitingLock waiting_lock(request, pid, &cond);
 		waiting_locks.push_back(waiting_lock);
 
 		cout << pid << " is waiting for RID " << request.rid << endl;
-		int result = pthread_cond_wait(&cond, &mutex); // TODO: dodać timeout
+		int result = pthread_cond_timedwait(&cond, &mutex, &timeout); // TODO: dodać timeout
 
 		if (result == ETIMEDOUT)
 		{
-			// Process timed out waiting.
+			// Process timed out waiting. He is no more waiting, remove him from waiting list.
+			waiting_locks.remove(waiting_lock);
 			cout << "process " << pid << " timed out" << endl;
 			return -1; // TODO: stałe na errory
 		}
