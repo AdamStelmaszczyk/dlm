@@ -46,35 +46,36 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		if (request.rid == it->request.rid && !permission[request.locktype][it->request.locktype])
 		{
 			// There is a conflict with some active lock.
-
 			waiting_locks.push_back(lock);
 
-			if (it->request.timeout != -1)
+			if (it->request.timeout == -1)
 			{
-				pthread_cond_t cond;
-				pthread_cond_init(&cond, NULL);
-
-				pthread_mutex_t mutex;
-				pthread_mutex_init(&mutex, NULL);
-				pthread_mutex_lock(&mutex);
-
-				struct timeval now;
-				struct timespec timeout;
-				gettimeofday(&now, NULL);
-				timeout.tv_sec = now.tv_sec + request.timeout / 1000;
-				timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
-
-				int result = pthread_cond_timedwait(&cond, &mutex, &timeout);
-				if (result == ETIMEDOUT)
-				{
-					return -1; // TODO: stałe na errory
-				}
-
-				// If we are here - process was awaken, so it got its lock.
-				return 0;
+				// Non-block mode, we immediately return error code.
+				return -1; // TODO: stałe na errory
 			}
 
+			pthread_cond_t cond;
+			pthread_cond_init(&cond, NULL);
 
+			pthread_mutex_t mutex;
+			pthread_mutex_init(&mutex, NULL);
+			pthread_mutex_lock(&mutex);
+
+			struct timeval now;
+			struct timespec timeout;
+			gettimeofday(&now, NULL);
+			timeout.tv_sec = now.tv_sec + request.timeout / 1000;
+			timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
+
+			int result = pthread_cond_timedwait(&cond, &mutex, &timeout);
+			if (result == ETIMEDOUT)
+			{
+				// Process timed out waiting.
+				return -1; // TODO: stałe na errory
+			}
+
+			// If we are here - process was awaken, so it got its lock.
+			return 0;
 		}
 	}
 
