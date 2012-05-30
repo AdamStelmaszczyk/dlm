@@ -61,6 +61,7 @@ void SimpleConsole::callProc(const std::string &dst)
 	{
 		throw WARNING("couldn't create pipe"); // TODO uzupelnic o nr bledu z errno
 	}
+
 	if ((child_pid = fork()) == 0)
 	{
 		close(p_response[WRITE_DESC]);
@@ -77,11 +78,18 @@ void SimpleConsole::callProc(const std::string &dst)
 		// w takiej kolejnosci jak jest teraz
 		execl(dst.c_str(), dst.c_str(), buff2, buff1, (void*) 0); // last two argvs should be pipe descriptors
 		throw WARNING2("couldn't open exec file: " + dst, errno);
+		// FIXME: po wpisaniu błędnej nazwy to idzie dalej i mamy np. komunikat "[new instance of process]".
+		// nie zaglebialem sie wystarczajaco, zeby zamiast komentarza wstawic sam "return",
+		// bo bardzo prawd. że trzeba pozamykać wszystko co sie otworzyło do tej pory
 	}
 	else if (child_pid == -1)
+	{
 		throw WARNING("couldn't create child process");
+	}
+
 	close(p_response[READ_DESC]);
 	close(p_request[WRITE_DESC]);
+
 	// start listener
 	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lockManager_); // FIXME memory leak
 	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
