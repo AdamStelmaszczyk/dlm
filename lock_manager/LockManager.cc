@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Lock.h"
+#include "LockOwner.h"
 #include "LockManager.h"
 
 using namespace std;
@@ -60,22 +61,6 @@ int LockManager::tryLock(TryLockRequest request, pid_t pid)
 {
 	return 0;
 }
-
-class LockOwner
-{
-public:
-	LockOwner(pid_t pid)
-	{
-		this->pid = pid;
-	}
-
-	bool operator() (const Lock& lock)
-	{
-		return lock.pid == pid;
-	}
-private:
-	pid_t pid;
-};
 
 void LockManager::cleanup(pid_t pid)
 {
