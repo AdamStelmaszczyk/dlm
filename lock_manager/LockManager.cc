@@ -18,27 +18,23 @@ using namespace dlm;
 
 bool LockManager::permission[5][5] =
 {
-	{ 1, 1, 1, 1, 0 },
-	{ 1, 1, 0, 0, 0 },
-	{ 1, 0, 1, 0, 0 },
-	{ 1, 0, 0, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-};
+{ 1, 1, 1, 1, 0 },
+{ 1, 1, 0, 0, 0 },
+{ 1, 0, 1, 0, 0 },
+{ 1, 0, 0, 0, 0 },
+{ 0, 0, 0, 0, 0 }, };
 
 LockManager::LockManager()
 {
-
 }
 
 int LockManager::lock(LockRequest request, pid_t pid)
 {
-	cout << "proces " << pid
-			<< " wykonuje locka na zasob " << request.rid
-			<< " rodzaj locka: " << request.locktype
-			<< " timeout " << request.timeout
-			<< endl;
+	cout << "process " << pid << " locks with type " << request.locktype << " on RID ";
+	cout << request.rid << " with timeout " << request.timeout << endl;
 
-	Lock lock = { request, pid };
+	Lock lock =
+	{ request, pid };
 
 	// Iterate through all active locks.
 	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
@@ -90,11 +86,14 @@ int LockManager::lock(LockRequest request, pid_t pid)
 
 int LockManager::unlock(UnlockRequest request, pid_t pid)
 {
+	cout << "process " << pid << " unlocks RID " << request.rid << endl;
 	return 0;
 }
 
 int LockManager::tryLock(TryLockRequest request, pid_t pid)
 {
+	cout << "process " << pid << " tries lock " << request.locktype << " on RID " << request.rid << endl;
+
 	// Iterate through all active locks.
 	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
 	{
@@ -116,7 +115,8 @@ void LockManager::cleanup(pid_t pid)
 	{
 		if (it->pid == pid)
 		{
-			UnlockRequest request = { it->request.rid };
+			UnlockRequest request =
+			{ it->request.rid };
 			unlock(request, pid);
 		}
 	}
