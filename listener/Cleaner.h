@@ -47,5 +47,6 @@ private:
 
 void *start_cleaner(void *p);
 
-} /* namespace dlm */
+}
+
 #endif /* CLEANER_H_ */

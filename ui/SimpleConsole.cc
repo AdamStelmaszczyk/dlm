@@ -14,12 +14,12 @@ namespace dlm
 {
 
 SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config, LockManager &lm) :
-		in_(in), out_(out), config_(config),lockManager_(lm)
+		in_(in), out_(out), config_(config), lockManager_(lm)
 {
 	Logger::getInstance().setOutputStream(out);
 	pthread_t t;
 	cleaner_ = new Cleaner(lm);
-	pthread_create(&t, NULL, &start_cleaner, (void*)cleaner_);
+	pthread_create(&t, NULL, &start_cleaner, (void*) cleaner_);
 }
 
 SimpleConsole::~SimpleConsole()
@@ -40,12 +40,12 @@ void SimpleConsole::start()
 		}
 		catch (const Warning &e)
 		{
-			Logger::getInstance().log("[%s]",e.what());
+			Logger::getInstance().log("[%s]", e.what());
 			continue; // Warnings shows only message, but shouldn't kill dlm
 		}
 		catch (const std::exception &e)
 		{ // other exceptions - here is also Error
-			Logger::getInstance().log("[%s]",e.what());
+			Logger::getInstance().log("[%s]", e.what());
 			exit(-1); // we don't know what to do, let's kill him (dlm)
 		}
 	}
@@ -71,11 +71,11 @@ void SimpleConsole::callProc(const std::string &dst)
 		// lepiej uzyj execv
 		//testowanie opcji z plikiem konfiguracyjnym
 		//execl(config_.getValue("terminal").c_str(), config_.getValue("terminal").c_str(), "-e",
-				//dst.c_str(), buff, p_response[READ_DESC], p_request[WRITE_DESC],  (char*) 0);
+		//dst.c_str(), buff, p_response[READ_DESC], p_request[WRITE_DESC],  (char*) 0);
 
 		// deskryptory na koncu argumentow powinny byc przekazywane
 		// w takiej kolejnosci jak jest teraz
-		execl(dst.c_str(), dst.c_str(), buff2, buff1, (void*)0); // last two argvs should be pipe descriptors
+		execl(dst.c_str(), dst.c_str(), buff2, buff1, (void*) 0); // last two argvs should be pipe descriptors
 		throw WARNING2("couldn't open exec file: " + dst, errno);
 	}
 	else if (child_pid == -1)
@@ -89,4 +89,4 @@ void SimpleConsole::callProc(const std::string &dst)
 	cleaner_->addClient(child_pid, thread);
 }
 
-} /* namespace dlm */
+}

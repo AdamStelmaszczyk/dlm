@@ -2,7 +2,7 @@
  * Lock.h
  *
  * @class Lock
- * @brief Structure storing info about lock.
+ * @brief Class storing info about lock.
  * @date 30-05-2012
  */
 
@@ -14,11 +14,17 @@
 namespace dlm
 {
 
-typedef struct
+class Lock
 {
+public:
 	LockRequest request;
 	pid_t pid;
-} Lock;
+
+	bool operator==(const Lock& other) const
+	{
+		return (pid == other.pid) && (request.rid == other.request.rid);
+	}
+};
 
 }
 

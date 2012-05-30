@@ -45,6 +45,11 @@ int LockManager::lock(LockRequest request, pid_t pid)
 			continue;
 		}
 
+		if (pid == it->pid)
+		{
+			return -2; // TODO: stałe na errory, ten proces juz ma locka na ten zasób
+		}
+
 		// There is a conflict with some active lock.
 		waiting_locks.push_back(lock);
 
@@ -80,14 +85,23 @@ int LockManager::lock(LockRequest request, pid_t pid)
 
 	// If we are here - there are no conflicts with active locks, so we can set requested lock.
 	active_locks.push_back(lock);
-
 	return 0;
 }
 
 int LockManager::unlock(UnlockRequest request, pid_t pid)
 {
 	cout << "process " << pid << " unlocks RID " << request.rid << endl;
-	return 0;
+	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
+	{
+		if (request.rid == it->request.rid)
+		{
+			// TODO: budzenie procesów czekających na właśnie zwolniony zasób
+			active_locks.remove(*it);
+			return 0;
+		}
+	}
+
+	return -1; // TODO: stałe na errory
 }
 
 int LockManager::tryLock(TryLockRequest request, pid_t pid)
@@ -111,15 +125,16 @@ void LockManager::cleanup(pid_t pid)
 {
 	cout << "cleanup after process " << pid << endl;
 	waiting_locks.remove_if(LockOwner(pid));
-	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
-	{
-		if (it->pid == pid)
-		{
-			UnlockRequest request =
-			{ it->request.rid };
-			unlock(request, pid);
-		}
-	}
+// TODO: fajnie bylo by po prostu zawolac unlock() ale on zmieni liste ktora akurat my przechodzimy
+//	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
+//	{
+//		if (it->pid == pid)
+//		{
+//			UnlockRequest request =
+//			{ it->request.rid };
+//			unlock(request, pid);
+//		}
+//	}
 }
 
 LockManager::~LockManager()
