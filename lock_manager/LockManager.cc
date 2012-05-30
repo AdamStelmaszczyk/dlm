@@ -40,10 +40,13 @@ int LockManager::lock(LockRequest request, pid_t pid)
 
 	Lock lock = { request, pid };
 
+	// Iterate through all active locks.
 	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); it++)
 	{
 		if (request.rid == it->request.rid && !permission[request.locktype][it->request.locktype])
 		{
+			// There is a conflict with some active lock.
+
 			waiting_locks.push_back(lock);
 
 			if (it->request.timeout != -1)
