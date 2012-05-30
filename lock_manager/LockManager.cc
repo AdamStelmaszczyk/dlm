@@ -61,8 +61,27 @@ int LockManager::tryLock(TryLockRequest request, pid_t pid)
 	return 0;
 }
 
+class LockOwner
+{
+public:
+	LockOwner(pid_t pid)
+	{
+		this->pid = pid;
+	}
+
+	bool operator() (const Lock& lock)
+	{
+		return lock.pid == pid;
+	}
+private:
+	pid_t pid;
+};
+
 void LockManager::cleanup(pid_t pid)
 {
+	cout << "cleanup after process " << pid << endl;
+	active_locks.remove_if(LockOwner(pid));
+	waiting_locks.remove_if(LockOwner(pid));
 }
 
 LockManager::~LockManager()

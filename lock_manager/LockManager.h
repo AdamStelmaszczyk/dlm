@@ -10,7 +10,6 @@
 #define LOCKMANAGER_H_
 
 #include <list>
-#include <queue>
 #include <sys/types.h>
 
 #include "Lock.h"
@@ -47,7 +46,7 @@ public:
 	virtual ~LockManager();
 private:
 	std::list<Lock> active_locks;
-	std::queue<Lock> waiting_locks;
+	std::list<Lock> waiting_locks;
 	static bool permission[5][5];
 };
 
