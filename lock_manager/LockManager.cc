@@ -53,9 +53,6 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		pthread_cond_t cond;
 		pthread_cond_init(&cond, NULL);
 
-		WaitingLock waiting_lock(request, pid, cond);
-		waiting_locks.push_back(waiting_lock);
-
 		pthread_mutex_t mutex;
 		pthread_mutex_init(&mutex, NULL);
 		pthread_mutex_lock(&mutex);
@@ -65,6 +62,9 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		gettimeofday(&now, NULL);
 		timeout.tv_sec = now.tv_sec + request.timeout / 1000;
 		timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
+
+		WaitingLock waiting_lock(request, pid, cond, mutex);
+		waiting_locks.push_back(waiting_lock);
 
 		cout << pid << " czeka" << endl;
 		int result = pthread_cond_wait(&cond, &mutex); // TODO: dodać timeout
@@ -121,7 +121,8 @@ void LockManager::awakeWaiting(rid_t rid)
 		cout << "budzimy " << waiting_lock.pid << endl;
 
 		// Wake up.
-		pthread_cond_signal(&waiting_lock.cond);
+		pthread_mutex_unlock(&waiting_lock.mutex);
+		pthread_cond_signal(&waiting_lock.cond); // FIXME: to nie działa, nie budzi
 
 		cout << "po sygnale" << endl;
 	}
@@ -140,6 +141,7 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 			// Awake processes waiting for this RID.
 			awakeWaiting(request.rid);
 
+			// One process could have only one lock on this RID, so we are done.
 			return 0;
 		}
 	}

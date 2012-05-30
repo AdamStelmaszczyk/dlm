@@ -5,10 +5,12 @@
 #include "ui/SimpleConsole.h"
 #include "lock_manager/LockManager.h"
 
+#include "api/dlm.h"
+
 using namespace std;
 using namespace dlm;
 
-int main()
+int main(int argc, char **argv)
 {
 	Config config("config.cfg");
 	LockManager lm;
