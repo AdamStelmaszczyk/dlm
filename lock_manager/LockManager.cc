@@ -5,7 +5,9 @@
  * @date 30-05-2012
  */
 
+#include <errno.h>
 #include <iostream>
+#include <sys/time.h>
 
 #include "Lock.h"
 #include "LockOwner.h"
@@ -42,7 +44,34 @@ int LockManager::lock(LockRequest request, pid_t pid)
 	{
 		if (request.rid == it->request.rid && !permission[request.locktype][it->request.locktype])
 		{
-			// pthread_cond_timedwait, wrzuć do waiting_locks, return
+			waiting_locks.push_back(lock);
+
+			if (it->request.timeout != -1)
+			{
+				pthread_cond_t cond;
+				pthread_cond_init(&cond, NULL);
+
+				pthread_mutex_t mutex;
+				pthread_mutex_init(&mutex, NULL);
+				pthread_mutex_lock(&mutex);
+
+				struct timeval now;
+				struct timespec timeout;
+				gettimeofday(&now, NULL);
+				timeout.tv_sec = now.tv_sec + request.timeout / 1000;
+				timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
+
+				int result = pthread_cond_timedwait(&cond, &mutex, &timeout);
+				if (result == ETIMEDOUT)
+				{
+					return -1; // TODO: stałe na errory
+				}
+
+				// If we are here - process was awaken, so it got its lock.
+				return 0;
+			}
+
+
 		}
 	}
 

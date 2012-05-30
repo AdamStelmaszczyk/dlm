@@ -9,13 +9,13 @@
 #ifndef DLM_H_
 #define DLM_H_
 
-/** resource id type */
+/** Resource id type. */
 typedef unsigned int rid_t;
 
-/** time type */
+/** Time in ms. */
 typedef long time_t;
 
-/** types of locks */
+/** Types of locks. */
 enum LockType
 {
 	CR, // Concurrent Read
