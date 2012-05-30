@@ -91,6 +91,16 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 
 int LockManager::tryLock(TryLockRequest request, pid_t pid)
 {
+	// Iterate through all active locks.
+	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
+	{
+		if (request.rid == it->request.rid && !permission[request.locktype][it->request.locktype])
+		{
+			// There is a conflict with some active lock.
+			return -1;
+		}
+	}
+	// There are no conflicts with active locks, so it is possible to set given lock.
 	return 0;
 }
 
