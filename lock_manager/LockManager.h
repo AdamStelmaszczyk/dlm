@@ -46,6 +46,7 @@ public:
 	void cleanup(pid_t pid);
 	virtual ~LockManager();
 private:
+	void awakeWaiting(rid_t rid);
 	std::list<Lock> active_locks;
 	std::list<WaitingLock> waiting_locks;
 	static bool permission[5][5];

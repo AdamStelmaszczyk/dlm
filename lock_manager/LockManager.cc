@@ -89,6 +89,37 @@ int LockManager::lock(LockRequest request, pid_t pid)
 	return 0;
 }
 
+void LockManager::awakeWaiting(rid_t rid)
+{
+	for (;;)
+	{
+		if (waiting_locks.empty())
+		{
+			return;
+		}
+		WaitingLock waiting_lock = waiting_locks.front();
+		TryLockRequest tryRequest = { waiting_lock.request.rid, waiting_lock.request.locktype };
+		if (tryLock(tryRequest, waiting_lock.pid))
+		{
+			// We can't awake him.
+			return;
+		}
+
+		// Copy lock to active list.
+		Lock lock(waiting_lock.request, waiting_lock.pid);
+		active_locks.push_back(lock);
+
+		// Copy the conditional variable, because we first have to remove waiting lock, and then awake process.
+		pthread_cond_t cond = waiting_lock.cond;
+
+		// Remove waiting lock.
+		waiting_locks.pop_front();
+
+		// Wake up.
+		pthread_cond_signal(&cond);
+	}
+}
+
 int LockManager::unlock(UnlockRequest request, pid_t pid)
 {
 	cout << "process " << pid << " unlocks RID " << request.rid << endl;
@@ -96,7 +127,11 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 	{
 		if (request.rid == it->request.rid)
 		{
-			// TODO: budzenie procesów czekających na właśnie zwolniony zasób
+			// Awake processes waiting for this RID.
+			awakeWaiting(request.rid);
+
+			// Remove this active lock.
+			// TODO: moze wybuchnac bo usuwanie wewnatrz iteracji tej samej listy!
 			active_locks.remove(*it);
 			return 0;
 		}
