@@ -121,7 +121,7 @@ void LockManager::awakeWaiting(rid_t rid)
 			active_locks.push_back(lock);
 
 			// Remove waiting lock.
-			waiting_locks.pop_front();
+			waiting_locks.remove(waiting_lock);
 
 			// Wake him up.
 			pthread_cond_signal(waiting_lock.cond);
