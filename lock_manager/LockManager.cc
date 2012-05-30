@@ -5,13 +5,13 @@
  * @date 30-05-2012
  */
 
-#include "LockManager.h"
 #include <iostream>
 
-using namespace std;
+#include "Lock.h"
+#include "LockManager.h"
 
-namespace dlm
-{
+using namespace std;
+using namespace dlm;
 
 LockManager::LockManager()
 {
@@ -44,6 +44,4 @@ void LockManager::cleanup(pid_t pid)
 
 LockManager::~LockManager()
 {
-}
-
 }

@@ -2,23 +2,25 @@
  * LockRequest.h
  *
  * @class LockRequest
- * @brief structure storing info about lock request
- * @date 28-05-2012
+ * @brief Structure storing info about lock request.
+ * @date 30-05-2012
  */
 
 #ifndef LOCKREQUEST_H_
 #define LOCKREQUEST_H_
+
 #include "../api/dlm.h"
 
 namespace dlm
 {
 
-struct LockRequest
+typedef struct
 {
 	time_t timeout_;
 	rid_t resource_;
 	LockType locktype_;
-};
+} LockRequest;
 
-} /* namespace dlm */
+}
+
 #endif /* LOCKREQUEST_H_ */

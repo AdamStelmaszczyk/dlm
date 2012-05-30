@@ -9,9 +9,11 @@
 #ifndef LOCKMANAGER_H_
 #define LOCKMANAGER_H_
 
+#include <list>
 #include <queue>
 #include <sys/types.h>
 
+#include "Lock.h"
 #include "LockRequest.h"
 #include "UnlockRequest.h"
 #include "TryLockRequest.h"
@@ -43,6 +45,9 @@ public:
 	 */
 	void cleanup(pid_t pid);
 	virtual ~LockManager();
+private:
+	std::list<Lock> active_locks;
+	std::queue<Lock> waiting_locks;
 };
 
 }

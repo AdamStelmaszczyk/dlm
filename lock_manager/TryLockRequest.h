@@ -3,7 +3,7 @@
  *
  * @class TryLockRequest
  * @brief trylock info structure
- * @date 28-05-2012
+ * @date 30-05-2012
  */
 
 #ifndef TRYLOCKREQUEST_H_
@@ -20,5 +20,6 @@ struct TryLockRequest
 	LockType lockType_;
 };
 
-} /* namespace dlm */
+}
+
 #endif /* TRYLOCKREQUEST_H_ */
