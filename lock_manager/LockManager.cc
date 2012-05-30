@@ -5,6 +5,7 @@
  * @date 30-05-2012
  */
 
+#include <stack>
 #include <errno.h>
 #include <iostream>
 #include <sys/time.h>
@@ -31,9 +32,6 @@ LockManager::LockManager()
 
 int LockManager::lock(LockRequest request, pid_t pid)
 {
-	cout << "process " << pid << " locks with type " << request.locktype << " on RID ";
-	cout << request.rid << " with timeout " << request.timeout << endl;
-
 	// Iterate through all active locks.
 	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
 	{
@@ -72,20 +70,30 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		timeout.tv_sec = now.tv_sec + request.timeout / 1000;
 		timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
 
-		int result = pthread_cond_timedwait(&cond, &mutex, &timeout);
+		cout << "ma czekać" << endl;
+		int result = pthread_cond_wait(&cond, &mutex); // TODO: dodać timeout
+		cout << "skończył czekać" << endl;
+
 		if (result == ETIMEDOUT)
 		{
 			// Process timed out waiting.
+			cout << "process " << pid << " timed out" << endl;
 			return -1; // TODO: stałe na errory
 		}
 
 		// If we are here - process was awaken, so it got its lock.
+		cout << "awaken process " << pid << " locks with type " << request.locktype << " on RID ";
+		cout << request.rid << " with timeout " << request.timeout << endl;
 		return 0;
 	}
 
 	// If we are here - there are no conflicts with active locks, so we can set requested lock.
 	Lock lock(request, pid);
 	active_locks.push_back(lock);
+
+	cout << "process " << pid << " locks with type " << request.locktype << " on RID ";
+	cout << request.rid << " with timeout " << request.timeout << endl;
+
 	return 0;
 }
 
@@ -98,7 +106,8 @@ void LockManager::awakeWaiting(rid_t rid)
 			return;
 		}
 		WaitingLock waiting_lock = waiting_locks.front();
-		TryLockRequest tryRequest = { waiting_lock.request.rid, waiting_lock.request.locktype };
+		TryLockRequest tryRequest =
+		{ waiting_lock.request.rid, waiting_lock.request.locktype };
 		if (tryLock(tryRequest, waiting_lock.pid))
 		{
 			// We can't awake him.
@@ -127,12 +136,12 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 	{
 		if (request.rid == it->request.rid)
 		{
+			// Remove this active lock.
+			active_locks.remove(*it);
+
 			// Awake processes waiting for this RID.
 			awakeWaiting(request.rid);
 
-			// Remove this active lock.
-			// TODO: moze wybuchnac bo usuwanie wewnatrz iteracji tej samej listy!
-			active_locks.remove(*it);
 			return 0;
 		}
 	}
@@ -149,9 +158,11 @@ int LockManager::tryLock(TryLockRequest request, pid_t pid)
 		if (request.rid == it->request.rid && !permission[request.locktype][it->request.locktype])
 		{
 			// There is a conflict with some active lock.
+			cout << "you can't have lock" << endl;
 			return -1;
 		}
 	}
+	cout << "you can have lock" << endl;
 	// There are no conflicts with active locks, so it is possible to set given lock.
 	return 0;
 }
@@ -160,16 +171,25 @@ void LockManager::cleanup(pid_t pid)
 {
 	cout << "cleanup after process " << pid << endl;
 	waiting_locks.remove_if(LockOwner(pid));
-// TODO: fajnie bylo by po prostu zawolac unlock() ale on zmieni liste ktora akurat my przechodzimy
-//	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
-//	{
-//		if (it->pid == pid)
-//		{
-//			UnlockRequest request =
-//			{ it->request.rid };
-//			unlock(request, pid);
-//		}
-//	}
+
+	// Collect all RID's that belong to given PID.
+	stack<rid_t> rid_stack;
+	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
+	{
+		if (it->pid == pid)
+		{
+			rid_stack.push(it->request.rid);
+		}
+	}
+
+	// Unlock these RID's.
+	while (!rid_stack.empty())
+	{
+		UnlockRequest request =
+		{ rid_stack.top() };
+		rid_stack.pop();
+		unlock(request, pid);
+	}
 }
 
 LockManager::~LockManager()

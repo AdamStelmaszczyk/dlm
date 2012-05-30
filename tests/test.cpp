@@ -16,11 +16,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	cout << "Start of test process" << endl;
 	DLM_init(argc, argv);
-	sleep(1);
-	DLM_lock(1, CR, 5000);
-	sleep(1);
-	DLM_unlock(1);
-	sleep(3);
+	DLM_lock(1, EX, 5000);
+	sleep(5);
 }

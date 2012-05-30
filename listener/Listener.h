@@ -37,7 +37,7 @@ private:
 
 	/** pipe's for request (from client) and response (to client) */
 	int p_response_, p_request_;
-	/** pid of child process (client) communicatig with this listner */
+	/** pid of child process (client) communicating with this listener */
 	pid_t client_;
 	/** reference to lock manager providing dlm functions */
 	LockManager &lockManager_;
