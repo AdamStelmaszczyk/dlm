@@ -26,10 +26,6 @@ bool LockManager::permission[5][5] =
 { 1, 0, 0, 0, 0 },
 { 0, 0, 0, 0, 0 }, };
 
-LockManager::LockManager()
-{
-}
-
 int LockManager::lock(LockRequest request, pid_t pid)
 {
 	// Iterate through all active locks.
@@ -126,6 +122,8 @@ void LockManager::awakeWaiting(rid_t rid)
 
 		// Wake up.
 		pthread_cond_signal(&waiting_lock.cond);
+
+		cout << "po sygnale" << endl;
 	}
 }
 

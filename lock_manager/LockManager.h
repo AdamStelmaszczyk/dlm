@@ -29,24 +29,45 @@ public:
 	/**
 	 * Locks resource for specified process.
 	 *
-	 * @param lock_request Request structure.
+	 * @param request Request structure.
 	 * @param pid Process Identifier, PID.
 	 *
 	 * @return If 0 - ok, otherwise - error.
 	 */
 	int lock(LockRequest request, pid_t pid);
+
+	/**
+	 * Unlocks resource for specified process.
+	 *
+	 * @param request Request structure.
+	 * @param pid Process Identifier, PID.
+	 *
+	 * @return If 0 - ok, otherwise - error.
+	 */
 	int unlock(UnlockRequest request, pid_t pid);
+
+	/**
+	 * Gives info whether is it possible to lock given resource or not. Doesn't lock anything.
+	 *
+	 * @param request Request structure.
+	 * @param pid Process Identifier, PID.
+	 *
+	 * @return If 0 - yes, otherwise - no.
+	 */
 	int tryLock(TryLockRequest request, pid_t pid);
-	LockManager();
+
 	/**
 	 * Removes any information (from accepted and blocked locks queues) about that process.
 	 *
 	 * @param pid Process Identifier, PID.
 	 */
 	void cleanup(pid_t pid);
+
 	virtual ~LockManager();
+
 private:
 	void awakeWaiting(rid_t rid);
+
 	std::list<Lock> active_locks;
 	std::list<WaitingLock> waiting_locks;
 	static bool permission[5][5];
