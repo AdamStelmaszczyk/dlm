@@ -9,6 +9,8 @@
 #ifndef LOCK_H_
 #define LOCK_H_
 
+#include <sys/types.h>
+
 #include "LockRequest.h"
 
 namespace dlm
@@ -20,20 +22,9 @@ public:
 	LockRequest request;
 	pid_t pid;
 
-	Lock()
-	{
-	}
-
-	Lock(LockRequest request, pid_t pid)
-	{
-		this->request = request;
-		this->pid = pid;
-	}
-
-	bool operator==(const Lock& other) const
-	{
-		return (pid == other.pid) && (request.rid == other.request.rid);
-	}
+	Lock();
+	Lock(LockRequest request, pid_t pid);
+	bool operator==(const Lock& other) const;
 };
 
 }

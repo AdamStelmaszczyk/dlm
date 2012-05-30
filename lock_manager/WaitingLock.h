@@ -9,6 +9,7 @@
 #ifndef WAITINGLOCK_H_
 #define WAITINGLOCK_H_
 
+#include "Lock.h"
 #include "LockRequest.h"
 
 namespace dlm
@@ -19,12 +20,7 @@ class WaitingLock : public Lock
 public:
 	pthread_cond_t cond;
 
-	WaitingLock(LockRequest request, pid_t pid, pthread_cond_t cond)
-	{
-		this->request = request;
-		this->pid = pid;
-		this->cond = cond;
-	}
+	WaitingLock(LockRequest request, pid_t pid, pthread_cond_t cond);
 };
 
 }
