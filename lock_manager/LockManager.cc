@@ -70,9 +70,9 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		timeout.tv_sec = now.tv_sec + request.timeout / 1000;
 		timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
 
-		cout << "ma czekać" << endl;
+		cout << pid << " czeka" << endl;
 		int result = pthread_cond_wait(&cond, &mutex); // TODO: dodać timeout
-		cout << "skończył czekać" << endl;
+		cout << pid << " skończył czekać" << endl;
 
 		if (result == ETIMEDOUT)
 		{
@@ -105,6 +105,7 @@ void LockManager::awakeWaiting(rid_t rid)
 		{
 			return;
 		}
+
 		WaitingLock waiting_lock = waiting_locks.front();
 		TryLockRequest tryRequest =
 		{ waiting_lock.request.rid, waiting_lock.request.locktype };
@@ -118,14 +119,13 @@ void LockManager::awakeWaiting(rid_t rid)
 		Lock lock(waiting_lock.request, waiting_lock.pid);
 		active_locks.push_back(lock);
 
-		// Copy the conditional variable, because we first have to remove waiting lock, and then awake process.
-		pthread_cond_t cond = waiting_lock.cond;
-
 		// Remove waiting lock.
 		waiting_locks.pop_front();
 
+		cout << "budzimy " << waiting_lock.pid << endl;
+
 		// Wake up.
-		pthread_cond_signal(&cond);
+		pthread_cond_signal(&waiting_lock.cond);
 	}
 }
 
