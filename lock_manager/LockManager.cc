@@ -63,7 +63,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		timeout.tv_sec = now.tv_sec + request.timeout / 1000;
 		timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
 
-		WaitingLock waiting_lock(request, pid, &cond, &mutex);
+		WaitingLock waiting_lock(request, pid, &cond);
 		waiting_locks.push_back(waiting_lock);
 
 		cout << pid << " is waiting for RID " << request.rid << endl;
@@ -94,31 +94,38 @@ int LockManager::lock(LockRequest request, pid_t pid)
 
 void LockManager::awakeWaiting(rid_t rid)
 {
-	for (;;)
+	// Collect all locks that are waiting on given RID.
+	stack<WaitingLock> locks_stack;
+	// Going backwards, because locks from the beginning of waiting list should be on top of the stack.
+	for (list<WaitingLock>::reverse_iterator it = waiting_locks.rbegin(); it != waiting_locks.rend(); ++it)
 	{
-		if (waiting_locks.empty())
+		if (it->request.rid == rid)
 		{
-			return;
+			locks_stack.push(*it);
 		}
+	}
 
-		WaitingLock waiting_lock = waiting_locks.front();
+	// Try to wake up locks collected in stack.
+	while (!locks_stack.empty())
+	{
+		WaitingLock waiting_lock = locks_stack.top();
+		locks_stack.pop();
+
 		TryLockRequest tryRequest =
 		{ waiting_lock.request.rid, waiting_lock.request.locktype };
-		if (tryLock(tryRequest, waiting_lock.pid))
+
+		if (tryLock(tryRequest, waiting_lock.pid) == 0)
 		{
-			// We can't awake him.
-			return;
+			// Copy lock to active list.
+			Lock lock(waiting_lock.request, waiting_lock.pid);
+			active_locks.push_back(lock);
+
+			// Remove waiting lock.
+			waiting_locks.pop_front();
+
+			// Wake him up.
+			pthread_cond_signal(waiting_lock.cond);
 		}
-
-		// Copy lock to active list.
-		Lock lock(waiting_lock.request, waiting_lock.pid);
-		active_locks.push_back(lock);
-
-		// Remove waiting lock.
-		waiting_locks.pop_front();
-
-		// Wake up.
-		pthread_cond_signal(waiting_lock.cond);
 	}
 }
 

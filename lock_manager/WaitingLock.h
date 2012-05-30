@@ -19,9 +19,8 @@ class WaitingLock : public Lock
 {
 public:
 	pthread_cond_t *cond;
-	pthread_mutex_t *mutex;
 
-	WaitingLock(LockRequest request, pid_t pid, pthread_cond_t *cond, pthread_mutex_t *mutex);
+	WaitingLock(LockRequest request, pid_t pid, pthread_cond_t *cond);
 };
 
 }
