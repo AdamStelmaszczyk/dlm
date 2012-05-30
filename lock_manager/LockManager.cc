@@ -41,7 +41,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 	Lock lock = { request, pid };
 
 	// Iterate through all active locks.
-	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); it++)
+	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
 	{
 		if (request.rid == it->request.rid && !permission[request.locktype][it->request.locktype])
 		{
@@ -97,8 +97,15 @@ int LockManager::tryLock(TryLockRequest request, pid_t pid)
 void LockManager::cleanup(pid_t pid)
 {
 	cout << "cleanup after process " << pid << endl;
-	active_locks.remove_if(LockOwner(pid));
 	waiting_locks.remove_if(LockOwner(pid));
+	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
+	{
+		if (it->pid == pid)
+		{
+			UnlockRequest request = { it->request.rid };
+			unlock(request, pid);
+		}
+	}
 }
 
 LockManager::~LockManager()
