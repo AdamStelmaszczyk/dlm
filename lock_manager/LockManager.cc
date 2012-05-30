@@ -10,6 +10,7 @@
 #include <sys/time.h>
 
 #include "Lock.h"
+#include "WaitingLock.h"
 #include "LockOwner.h"
 #include "LockManager.h"
 
@@ -33,9 +34,6 @@ int LockManager::lock(LockRequest request, pid_t pid)
 	cout << "process " << pid << " locks with type " << request.locktype << " on RID ";
 	cout << request.rid << " with timeout " << request.timeout << endl;
 
-	Lock lock =
-	{ request, pid };
-
 	// Iterate through all active locks.
 	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
 	{
@@ -51,7 +49,6 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		}
 
 		// There is a conflict with some active lock.
-		waiting_locks.push_back(lock);
 
 		if (it->request.timeout == -1)
 		{
@@ -61,6 +58,9 @@ int LockManager::lock(LockRequest request, pid_t pid)
 
 		pthread_cond_t cond;
 		pthread_cond_init(&cond, NULL);
+
+		WaitingLock waiting_lock(request, pid, cond);
+		waiting_locks.push_back(waiting_lock);
 
 		pthread_mutex_t mutex;
 		pthread_mutex_init(&mutex, NULL);
@@ -84,6 +84,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 	}
 
 	// If we are here - there are no conflicts with active locks, so we can set requested lock.
+	Lock lock(request, pid);
 	active_locks.push_back(lock);
 	return 0;
 }
@@ -100,7 +101,6 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 			return 0;
 		}
 	}
-
 	return -1; // TODO: stałe na errory
 }
 

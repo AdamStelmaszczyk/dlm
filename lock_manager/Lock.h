@@ -20,6 +20,16 @@ public:
 	LockRequest request;
 	pid_t pid;
 
+	Lock()
+	{
+	}
+
+	Lock(LockRequest request, pid_t pid)
+	{
+		this->request = request;
+		this->pid = pid;
+	}
+
 	bool operator==(const Lock& other) const
 	{
 		return (pid == other.pid) && (request.rid == other.request.rid);

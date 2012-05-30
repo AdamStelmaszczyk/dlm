@@ -13,6 +13,7 @@
 #include <sys/types.h>
 
 #include "Lock.h"
+#include "WaitingLock.h"
 #include "LockRequest.h"
 #include "UnlockRequest.h"
 #include "TryLockRequest.h"
@@ -46,7 +47,7 @@ public:
 	virtual ~LockManager();
 private:
 	std::list<Lock> active_locks;
-	std::list<Lock> waiting_locks;
+	std::list<WaitingLock> waiting_locks;
 	static bool permission[5][5];
 };
 

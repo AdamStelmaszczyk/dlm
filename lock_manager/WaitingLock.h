@@ -1,0 +1,32 @@
+/**
+ * WaitingLock.h
+ *
+ * @class WaitingLock
+ * @brief The same as normal lock, but with its conditional variable.
+ * @date 30-05-2012
+ */
+
+#ifndef WAITINGLOCK_H_
+#define WAITINGLOCK_H_
+
+#include "LockRequest.h"
+
+namespace dlm
+{
+
+class WaitingLock : public Lock
+{
+public:
+	pthread_cond_t cond;
+
+	WaitingLock(LockRequest request, pid_t pid, pthread_cond_t cond)
+	{
+		this->request = request;
+		this->pid = pid;
+		this->cond = cond;
+	}
+};
+
+}
+
+#endif /* WAITINGLOCK_H_ */
