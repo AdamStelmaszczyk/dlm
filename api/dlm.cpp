@@ -68,23 +68,23 @@ int DLM_init_file_resource(char** dest)
 int DLM_lock(rid_t resource_id, LockType lock_type, time_t timeout)
 {
 	LockRequest lock_request;
-	lock_request.resource_ = resource_id;
-	lock_request.locktype_ = lock_type;
-	lock_request.timeout_ = timeout;
+	lock_request.rid = resource_id;
+	lock_request.locktype = lock_type;
+	lock_request.timeout = timeout;
 	return sendMesage('l', lock_request);
 }
 
 int DLM_unlock(rid_t resource_id)
 {
 	UnlockRequest unlock_request;
-	unlock_request.resource_ = resource_id;
+	unlock_request.rid = resource_id;
 	return sendMesage('u', unlock_request);
 }
 
 int DLM_trylock(rid_t resource_id, LockType lock_type)
 {
 	TryLockRequest try_request;
-	try_request.resource_ = resource_id;
-	try_request.lockType_ = lock_type;
+	try_request.rid = resource_id;
+	try_request.locktype = lock_type;
 	return sendMesage('t', try_request);
 }

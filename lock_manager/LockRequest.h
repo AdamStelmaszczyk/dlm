@@ -16,9 +16,9 @@ namespace dlm
 
 typedef struct
 {
-	time_t timeout_;
-	rid_t resource_;
-	LockType locktype_;
+	time_t timeout;
+	rid_t rid;
+	LockType locktype;
 } LockRequest;
 
 }

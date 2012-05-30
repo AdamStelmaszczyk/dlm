@@ -16,8 +16,8 @@ namespace dlm
 
 struct TryLockRequest
 {
-	rid_t resource_;
-	LockType lockType_;
+	rid_t rid;
+	LockType locktype;
 };
 
 }

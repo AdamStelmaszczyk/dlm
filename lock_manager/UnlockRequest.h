@@ -14,7 +14,7 @@ namespace dlm
 
 struct UnlockRequest
 {
-	rid_t resource_;
+	rid_t rid;
 };
 
 }

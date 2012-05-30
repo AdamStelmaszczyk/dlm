@@ -16,8 +16,8 @@ namespace dlm
 
 typedef struct
 {
-	pid_t pid;
 	LockRequest request;
+	pid_t pid;
 } Lock;
 
 }

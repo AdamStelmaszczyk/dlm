@@ -48,6 +48,7 @@ public:
 private:
 	std::list<Lock> active_locks;
 	std::queue<Lock> waiting_locks;
+	static bool permission[5][5];
 };
 
 }
