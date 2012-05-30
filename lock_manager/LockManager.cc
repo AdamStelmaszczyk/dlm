@@ -63,12 +63,11 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		timeout.tv_sec = now.tv_sec + request.timeout / 1000;
 		timeout.tv_nsec = now.tv_usec * 1000 + request.timeout * 1000000;
 
-		WaitingLock waiting_lock(request, pid, cond, mutex);
+		WaitingLock waiting_lock(request, pid, &cond, &mutex);
 		waiting_locks.push_back(waiting_lock);
 
-		cout << pid << " czeka" << endl;
+		cout << pid << " is waiting for RID " << request.rid << endl;
 		int result = pthread_cond_wait(&cond, &mutex); // TODO: dodać timeout
-		cout << pid << " skończył czekać" << endl;
 
 		if (result == ETIMEDOUT)
 		{
@@ -118,13 +117,8 @@ void LockManager::awakeWaiting(rid_t rid)
 		// Remove waiting lock.
 		waiting_locks.pop_front();
 
-		cout << "budzimy " << waiting_lock.pid << endl;
-
 		// Wake up.
-		pthread_mutex_unlock(&waiting_lock.mutex);
-		pthread_cond_signal(&waiting_lock.cond); // FIXME: to nie działa, nie budzi
-
-		cout << "po sygnale" << endl;
+		pthread_cond_signal(waiting_lock.cond);
 	}
 }
 
@@ -158,11 +152,11 @@ int LockManager::tryLock(TryLockRequest request, pid_t pid)
 		if (request.rid == it->request.rid && !permission[request.locktype][it->request.locktype])
 		{
 			// There is a conflict with some active lock.
-			cout << "you can't have lock" << endl;
+			cout << "you can't have this lock" << endl;
 			return -1;
 		}
 	}
-	cout << "you can have lock" << endl;
+	cout << "you can have this lock" << endl;
 	// There are no conflicts with active locks, so it is possible to set given lock.
 	return 0;
 }

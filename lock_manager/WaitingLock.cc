@@ -9,7 +9,7 @@
 
 using namespace dlm;
 
-WaitingLock::WaitingLock(LockRequest request, pid_t pid, pthread_cond_t cond, pthread_mutex_t mutex)
+WaitingLock::WaitingLock(LockRequest request, pid_t pid, pthread_cond_t *cond, pthread_mutex_t *mutex)
 {
 	this->request = request;
 	this->pid = pid;
