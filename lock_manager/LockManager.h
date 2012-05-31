@@ -71,9 +71,10 @@ public:
 	void cleanup(pid_t pid);
 
 	/**
-	 * Registers new resource and return unique RID.
+	 * Registers new resource and returns unique RID for given file.
 	 *
 	 * @param path Path to the file.
+	 * @return Unique RID.
 	 */
 	rid_t create_file_resource(const char *path);
 
