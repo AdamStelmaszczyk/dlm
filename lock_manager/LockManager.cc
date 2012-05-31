@@ -39,7 +39,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 
 		if (pid == it->pid)
 		{
-			return -2; // TODO: stałe na errory, ten proces juz ma locka na ten zasób
+			return ALREADY_HAVE_LOCK;
 		}
 
 		// There is a conflict with some active lock.
@@ -47,7 +47,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		if (it->request.timeout == -1)
 		{
 			// Non-block mode, we immediately return error code.
-			return -1; // TODO: stałe na errory
+			return ALREADY_LOCKED;
 		}
 
 		pthread_cond_t cond;
@@ -68,20 +68,20 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		waiting_locks.push_back(waiting_lock);
 
 		cout << pid << " is waiting for RID " << request.rid << endl;
-		int result = pthread_cond_timedwait(&cond, &mutex, &timeout); // TODO: dodać timeout
+		int result = pthread_cond_timedwait(&cond, &mutex, &timeout);
 
 		if (result == ETIMEDOUT)
 		{
 			// Process timed out waiting. He is no more waiting, remove him from waiting list.
 			waiting_locks.remove(waiting_lock);
 			cout << "process " << pid << " timed out" << endl;
-			return -1; // TODO: stałe na errory
+			return TIMEOUT;
 		}
 
 		// If we are here - process was awaken, so it got its lock.
 		cout << "awaken process " << pid << " locks with type " << request.locktype << " on RID ";
 		cout << request.rid << " with timeout " << request.timeout << endl;
-		return 0;
+		return OK;
 	}
 
 	// If we are here - there are no conflicts with active locks, so we can set requested lock.
@@ -91,7 +91,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 	cout << "process " << pid << " locks with type " << request.locktype << " on RID ";
 	cout << request.rid << " with timeout " << request.timeout << endl;
 
-	return 0;
+	return OK;
 }
 
 void LockManager::awakeWaiting(rid_t rid)
@@ -145,10 +145,10 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 			awakeWaiting(request.rid);
 
 			// One process could have only one lock on this RID, so we are done.
-			return 0;
+			return OK;
 		}
 	}
-	return -1; // TODO: stałe na errory
+	return NO_SUCH_LOCK;
 }
 
 int LockManager::tryLock(TryLockRequest request, pid_t pid)
@@ -162,12 +162,12 @@ int LockManager::tryLock(TryLockRequest request, pid_t pid)
 		{
 			// There is a conflict with some active lock.
 			cout << "you can't have this lock" << endl;
-			return -1;
+			return ALREADY_LOCKED;
 		}
 	}
 	cout << "you can have this lock" << endl;
 	// There are no conflicts with active locks, so it is possible to set given lock.
-	return 0;
+	return OK;
 }
 
 void LockManager::cleanup(pid_t pid)
