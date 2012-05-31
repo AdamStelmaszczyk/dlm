@@ -9,6 +9,7 @@
 #ifndef LOCKMANAGER_H_
 #define LOCKMANAGER_H_
 
+#include <map>
 #include <list>
 #include <sys/types.h>
 
@@ -69,6 +70,13 @@ public:
 	 */
 	void cleanup(pid_t pid);
 
+	/**
+	 * Registers new resource and return unique RID.
+	 *
+	 * @param path Path to the file.
+	 */
+	rid_t create_file_resource(const char *path);
+
 	virtual ~LockManager();
 
 private:
@@ -76,6 +84,7 @@ private:
 
 	std::list<Lock> active_locks;
 	std::list<WaitingLock> waiting_locks;
+	std::map<const char*, rid_t> resources;
 	static bool permission[5][5];
 };
 

@@ -195,6 +195,18 @@ void LockManager::cleanup(pid_t pid)
 	}
 }
 
+rid_t LockManager::create_file_resource(const char *path)
+{
+	map<const char*, rid_t>::iterator it = resources.find(path);
+	if (it == resources.end())
+	{
+		rid_t new_rid = resources.size();
+		resources[path] = new_rid;
+		return new_rid;
+	}
+	return it->second;
+}
+
 LockManager::~LockManager()
 {
 }
