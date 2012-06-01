@@ -217,7 +217,12 @@ struct timespec LockManager::getTimespec(LockRequest& request)
 	gettimeofday(&now, NULL);
 	// 1 s = 10^3 milliseconds = 10^6 microseconds = 10^9 nanoseconds
 	timeout.tv_sec = now.tv_sec + (request.timeout / 1000);
-	timeout.tv_nsec = 1000 * now.tv_usec;
+	timeout.tv_nsec = (1000 * now.tv_usec) + (1000000 * request.timeout);
+	if (timeout.tv_nsec >= 1000000000)
+	{
+		timeout.tv_nsec -= 1000000000;
+		timeout.tv_sec++;
+	}
 	return timeout;
 }
 
