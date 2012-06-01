@@ -94,7 +94,7 @@ void SimpleConsole::call_proc(vector<string> &args)
 		char *terminal = (char*) config.get_value("terminal").c_str();
 
 		terminal_arg[0] = terminal;
-		terminal_arg[1] = (char*) "-e";
+		terminal_arg[1] = (char*) config.get_value("terminal_flag").c_str();
 
 		for (int i = 2; i < arg_num - 3; i++)
 		{
