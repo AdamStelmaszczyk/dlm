@@ -68,7 +68,16 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		waiting_locks.push_back(waiting_lock);
 
 		cout << pid << " is waiting for RID " << request.rid << endl;
-		int result = pthread_cond_timedwait(&cond, &mutex, &timeout);
+
+		int result;
+		if (request.timeout == 0)
+		{
+			result = pthread_cond_wait(&cond, &mutex);
+		}
+		else
+		{
+			result = pthread_cond_timedwait(&cond, &mutex, &timeout);
+		}
 
 		if (result == ETIMEDOUT)
 		{
