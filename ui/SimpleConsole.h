@@ -46,13 +46,13 @@ private:
 	 */
 	std::vector<std::string> parse_arguments(std::string &args);
 	/** input stream */
-	std::istream& in_;
+	std::istream& in;
 	/** output stream */
-	std::ostream& out_;
+	std::ostream& out;
 	/** config object */
-	Config& config_;
+	Config& config;
 	/** lock manager for child process */
-	LockManager &lockManager_;
+	LockManager &lock_manager;
 	/** cleaner to cleanup after dead childs */
 	Cleaner* cleaner_;
 };

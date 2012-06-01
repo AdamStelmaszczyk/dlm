@@ -12,12 +12,10 @@
 #include "../logger/Logger.h"
 
 using namespace std;
-
-namespace dlm
-{
+using namespace dlm;
 
 SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config, LockManager &lm) :
-		in_(in), out_(out), config_(config), lockManager_(lm)
+		in(in), out(out), config(config), lock_manager(lm)
 {
 	Logger::getInstance().setOutputStream(out);
 	pthread_t t;
@@ -34,11 +32,11 @@ void SimpleConsole::start()
 {
 	string instr;
 	Logger::getInstance().log("dlm console started");
-	while (in_)
+	while (in)
 	{
 		try
 		{
-			getline(in_, instr);
+			getline(in, instr);
 			vector<string> args = parse_arguments(instr);
 			if (args.size() > 0)
 			{
@@ -93,12 +91,12 @@ void SimpleConsole::call_proc(vector<string> &args)
 		int arg_num = args.size() + 5;
 
 		char *terminal_arg[arg_num];
-		char *terminal = (char*) config_.getValue("terminal").c_str();
+		char *terminal = (char*) config.getValue("terminal").c_str();
 
 		terminal_arg[0] = terminal;
 		terminal_arg[1] = (char*) "-e";
 
-		for (int i = 2; i < arg_num - 3; ++i)
+		for (int i = 2; i < arg_num - 3; i++)
 		{
 			terminal_arg[i] = (char*) string(args[i - 2]).c_str();
 		}
@@ -106,12 +104,6 @@ void SimpleConsole::call_proc(vector<string> &args)
 		terminal_arg[arg_num - 3] = (char*) desc_read;
 		terminal_arg[arg_num - 2] = (char*) desc_write;
 		terminal_arg[arg_num - 1] = NULL;
-
-		cout << terminal << " " << endl;
-		for (int i = 0; i < arg_num; i++)
-		{
-			cout << terminal_arg[i] << endl;
-		}
 
 		execv(terminal, terminal_arg);
 	}
@@ -125,7 +117,7 @@ void SimpleConsole::call_proc(vector<string> &args)
 
 	// start listener
 
-	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lockManager_); // FIXME memory leak
+	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lock_manager); // FIXME memory leak
 	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
 	cleaner_->addClient(child_pid, thread);
@@ -143,6 +135,4 @@ vector<string> SimpleConsole::parse_arguments(string &args)
 	}
 
 	return program_args;
-}
-
 }
