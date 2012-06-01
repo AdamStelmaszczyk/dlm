@@ -44,7 +44,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 
 		// There is a conflict with some active lock.
 
-		if (it->request.timeout == -1)
+		if (request.timeout == -1)
 		{
 			// Non-block mode, we immediately return error code.
 			return ALREADY_LOCKED;
