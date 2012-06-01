@@ -1,4 +1,6 @@
 #include <cstdlib>
+#include <vector>
+#include <sstream>
 #include <pthread.h>
 
 #include "SimpleConsole.h"
@@ -35,7 +37,7 @@ void SimpleConsole::start()
 	{
 		try
 		{
-			in_ >> instr;
+			getline(in_, instr);
 			callProc(instr);
 		}
 		catch (const Warning &e)
@@ -70,13 +72,36 @@ void SimpleConsole::callProc(const std::string &dst)
 		sprintf(buff1, "%d", p_request[WRITE_DESC]);
 		sprintf(buff2, "%d", p_response[READ_DESC]);
 		// lepiej uzyj execv
-		//testowanie opcji z plikiem konfiguracyjnym
-		//execl(config_.getValue("terminal").c_str(), config_.getValue("terminal").c_str(), "-e",
-		//dst.c_str(), buff, p_response[READ_DESC], p_request[WRITE_DESC],  (char*) 0);
 
 		// deskryptory na koncu argumentow powinny byc przekazywane
 		// w takiej kolejnosci jak jest teraz
-		execl(dst.c_str(), dst.c_str(), buff2, buff1, (void*) 0); // last two argvs should be pipe descriptors
+		//execl(dst.c_str(), dst.c_str(), buff2, buff1, (void*) 0); // last two argvs should be pipe descriptors
+
+		//wydziel nazwę programu i przekazane argumenty
+		string param;
+		stringstream sstream(dst);
+
+		vector<string> params;
+
+		while (sstream >> param)
+			params.push_back(param);
+
+		//2 na nazwę terminala i parametr -e,
+		//2 dodatkowe na deskryptory i jeden na NULL
+		unsigned param_num = params.size() + 5;
+
+		char * arg[param_num];
+		arg[0] = (char*)string(config_.getValue("terminal")).c_str();
+		arg[1] = (char*)string("-e").c_str();
+		for(unsigned i = 2; i < param_num - 3; ++i)
+		{
+			arg[i] = (char*)string(params[i]).c_str();
+		}
+		arg[param_num-3] = (char*)buff2;
+		arg[param_num-2] = (char*)buff1;
+		arg[param_num-1] = NULL;
+		execv(string(config_.getValue("terminal")).c_str(),arg);
+
 		throw WARNING2("couldn't open exec file: " + dst, errno);
 		// FIXME: po wpisaniu błędnej nazwy to idzie dalej i mamy np. komunikat "[new instance of process]".
 		// nie zaglebialem sie wystarczajaco, zeby zamiast komentarza wstawic sam "return",
@@ -87,6 +112,7 @@ void SimpleConsole::callProc(const std::string &dst)
 		throw WARNING("couldn't create child process");
 	}
 
+	cout << "zamykam" << endl;
 	close(p_response[READ_DESC]);
 	close(p_request[WRITE_DESC]);
 
