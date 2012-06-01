@@ -40,11 +40,11 @@ void SimpleConsole::start()
 		{
 			getline(in_, instr);
 			vector<string> args = parse_arguments(instr);
-			if(args.size() > 0)
+			if (args.size() > 0)
 			{
 				fstream program_file;
-				program_file.open(args[0].c_str(),ios::in);
-				if(program_file.is_open())
+				program_file.open(args[0].c_str(), ios::in);
+				if (program_file.is_open())
 				{
 					call_proc(args);
 				}
@@ -92,8 +92,8 @@ void SimpleConsole::call_proc(vector<string> &args)
 		unsigned param_num = args.size() + 5;
 
 		char * arg[param_num];
-		arg[0] = (char*) string(config_.getValue("terminal")).c_str();
-		arg[1] = (char*) string("-e").c_str();
+		arg[0] = (char*) config_.getValue("terminal").c_str();
+		arg[1] = (char*) "-e";
 		for (unsigned i = 2; i < param_num - 3; ++i)
 		{
 			arg[i] = (char*) string(args[i - 2]).c_str();
@@ -102,7 +102,7 @@ void SimpleConsole::call_proc(vector<string> &args)
 		arg[param_num - 2] = (char*) buff1;
 		arg[param_num - 1] = NULL;
 
-		execv(string(config_.getValue("terminal")).c_str(), arg);
+		execv(config_.getValue("terminal").c_str(), arg);
 
 	}
 	else if (child_pid == -1)
