@@ -42,3 +42,16 @@ Kwestie do rozwiązania:
   czekających jest kompatybilny, jeżeli tak to go signal jego zmienną warunkową i przenieś go do listy locków zaakceptowanych.
   
   Ok, FIFO weźmie się z <queue>, no a liste z <list>.
+  FIFO nie weźmie się z <queue>, bo nie oferuje operacji na elemtach wewnątrz, także też zrobiłem to jako listę.
+  
+Wydawało mi się, że bylismy dość precyzjni, jesli chodzi o konwencję, ale jesteśmy w paru aspektach niekonsekwentni:
+
+1. Nazwy funkcji. Blinowski sugerował np. DLM_lock(), zatem trzymajmy się tej konwencji, nie camelCase().
+2. Nazwy zmiennych. Tak samo, ta_konwencja.
+3. Widzę, że Piotrek głównie tak robi. Dodawanie _ na końcu zmiennych prywatnych. Moim zdaniem brzydko to wygląda, a zysk jest żaden. 
+   Ponadto po zmienieniu zasięgu zmiennej trzeba zmieniać te "_". Widziałem też to _ ale na początku.
+   W czym _ jest lepsze na początku od na końcu? Podczas pisania piszemy sobie "_" i już nam dopełnia do reszty nazwy, taki dodatkowy plus.
+   Ale ja bym proponował zrezygnować z takich dekoracji, po prostu nazwy zmiennych i już.  
+4. Gwiazdkę przy wskaznikach proponuje stawiac zawsze przy nazwie zmiennej czyli void *ptr, nie void* ptr.
+   Jeśli funkcja zwraca wskaźnik to tak: void* f(), nie void *f().
+5. // Komentarze jednolinijkowe ze spacją po "/" i najlepiej pełnym zdaniem z kropeczką.
