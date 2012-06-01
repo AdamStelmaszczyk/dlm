@@ -83,26 +83,28 @@ void SimpleConsole::call_proc(vector<string> &args)
 	{
 		close(p_response[WRITE_DESC]);
 		close(p_request[READ_DESC]);
-		char buff1[256], buff2[256]; // converting descriptor number to cstring
-		sprintf(buff1, "%d", p_request[WRITE_DESC]);
-		sprintf(buff2, "%d", p_response[READ_DESC]);
+		char desc_write[256], desc_read[256]; // converting descriptor number to cstring
+		sprintf(desc_write, "%d", p_request[WRITE_DESC]);
+		sprintf(desc_read, "%d", p_response[READ_DESC]);
 
-		//2 na nazwę terminala i parametr -e,
-		//2 dodatkowe na deskryptory i jeden na NULL
-		unsigned param_num = args.size() + 5;
+		// 1 na nazwę terminala, 2 dodatkowe na deskryptory i 1 na NULL.
+		unsigned param_num = args.size() + 4;
 
-		char * arg[param_num];
-		arg[0] = (char*) config_.getValue("terminal").c_str();
-		arg[1] = (char*) "-e";
-		for (unsigned i = 2; i < param_num - 3; ++i)
+		char *arg[param_num];
+		char *terminal = (char*) config_.getValue("terminal").c_str();
+
+		arg[0] = terminal;
+
+		for (unsigned i = 1; i < param_num - 3; ++i)
 		{
-			arg[i] = (char*) string(args[i - 2]).c_str();
+			arg[i] = (char*) string(args[i - 1]).c_str();
 		}
-		arg[param_num - 3] = (char*) buff2;
-		arg[param_num - 2] = (char*) buff1;
+
+		arg[param_num - 3] = (char*) desc_read;
+		arg[param_num - 2] = (char*) desc_write;
 		arg[param_num - 1] = NULL;
 
-		execv(config_.getValue("terminal").c_str(), arg);
+		execv(terminal, arg);
 
 	}
 	else if (child_pid == -1)

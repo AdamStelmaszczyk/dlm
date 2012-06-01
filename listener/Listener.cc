@@ -26,16 +26,14 @@ Listener::Listener(int p_response, int p_request, pid_t client, LockManager& lm)
 void Listener::start()
 {
 	char request_type = 0;
-	int size = 0;
 	Logger::getInstance().log("[%s: %d]", "new instance of process", client_);
 	while (1)
 	{
 		try
 		{
 			// first of all, read request message header
-			if (read(p_request_, &request_type, sizeof(request_type)) < (int)sizeof(request_type))
+			if (read(p_request_, &request_type, sizeof(request_type)) < (int) sizeof(request_type))
 			{
-				std::cout << "wynik read: " << size << " errno: " << errno << std::endl;
 				break; // pipe was closed
 			}
 			Logger::getInstance().log("[%s: %c]", "got new message from process", request_type);
@@ -75,7 +73,7 @@ void Listener::handleLockRequest()
 {
 	LockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &request, sizeof(LockRequest)) < (int)sizeof(LockRequest))
+	if (read(p_request_, &request, sizeof(LockRequest)) < (int) sizeof(LockRequest))
 	{
 		throw ERROR2("Couldn't read lock message from pipe", errno);
 	}
@@ -87,7 +85,7 @@ void Listener::handleTryLockRequest()
 {
 	TryLockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &request, sizeof(TryLockRequest)) < (int)sizeof(TryLockRequest))
+	if (read(p_request_, &request, sizeof(TryLockRequest)) < (int) sizeof(TryLockRequest))
 	{
 		throw ERROR2("Couldn't read trylock message from pipe", errno);
 	}
@@ -99,7 +97,7 @@ void Listener::handleUnlockRequest()
 {
 	UnlockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &request, sizeof(UnlockRequest)) < (int)sizeof(UnlockRequest))
+	if (read(p_request_, &request, sizeof(UnlockRequest)) < (int) sizeof(UnlockRequest))
 	{
 		throw ERROR2("Couldn't read unlock message from pipe", errno);
 	}
@@ -109,7 +107,7 @@ void Listener::handleUnlockRequest()
 
 void Listener::sendResponse(int result)
 {
-	if (write(p_response_, &result, sizeof(int)) < (int)sizeof(int))
+	if (write(p_response_, &result, sizeof(int)) < (int) sizeof(int))
 	{
 		throw ERROR("Couldn't respond to client");
 	}
