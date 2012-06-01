@@ -62,23 +62,22 @@ int LockManager::lock(LockRequest request, pid_t pid)
 
 		cout << pid << " is waiting for RID " << request.rid << endl;
 
-		int result;
 		if (request.timeout == 0)
 		{
-			result = pthread_cond_wait(&cond, &mutex);
+			pthread_cond_wait(&cond, &mutex);
 		}
 		else
 		{
 			struct timespec timeout = getTimespec(request);
-			result = pthread_cond_timedwait(&cond, &mutex, &timeout);
-		}
+			int result = pthread_cond_timedwait(&cond, &mutex, &timeout);
 
-		if (result == ETIMEDOUT)
-		{
-			// Process timed out waiting. He is no more waiting, remove him from waiting list.
-			waiting_locks.remove(waiting_lock);
-			cout << "process " << pid << " timed out" << endl;
-			return TIMEOUT;
+			if (result == ETIMEDOUT)
+			{
+				// Process timed out waiting. He is no more waiting, remove him from waiting list.
+				waiting_locks.remove(waiting_lock);
+				cout << "process " << pid << " timed out" << endl;
+				return TIMEOUT;
+			}
 		}
 
 		// If we are here - process was awaken, so it got its lock.
