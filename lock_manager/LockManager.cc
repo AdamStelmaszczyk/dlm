@@ -26,17 +26,6 @@ bool LockManager::permission[5][5] =
 { 1, 0, 0, 0, 0 },
 { 0, 0, 0, 0, 0 }, };
 
-struct timespec LockManager::getTimespec(LockRequest& request)
-{
-	struct timeval now;
-	struct timespec timeout;
-	gettimeofday(&now, NULL);
-	// 1 s = 10^3 milliseconds = 10^6 microseconds = 10^9 nanoseconds
-	timeout.tv_sec = now.tv_sec + (request.timeout / 1000);
-	timeout.tv_nsec = 1000 * now.tv_usec;
-	return timeout;
-}
-
 int LockManager::lock(LockRequest request, pid_t pid)
 {
 	// Iterate through all active locks.
@@ -219,6 +208,17 @@ rid_t LockManager::create_file_resource(const char *path)
 		return new_rid;
 	}
 	return it->second;
+}
+
+struct timespec LockManager::getTimespec(LockRequest& request)
+{
+	struct timeval now;
+	struct timespec timeout;
+	gettimeofday(&now, NULL);
+	// 1 s = 10^3 milliseconds = 10^6 microseconds = 10^9 nanoseconds
+	timeout.tv_sec = now.tv_sec + (request.timeout / 1000);
+	timeout.tv_nsec = 1000 * now.tv_usec;
+	return timeout;
 }
 
 LockManager::~LockManager()
