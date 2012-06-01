@@ -39,7 +39,21 @@ void SimpleConsole::start()
 		try
 		{
 			getline(in_, instr);
-			callProc(instr);
+			vector<string> args = parse_arguments(instr);
+			if(args.size() > 0)
+			{
+				fstream program_file;
+				program_file.open(args[0].c_str(),ios::in);
+				if(program_file.is_open())
+				{
+					call_proc(args);
+				}
+				else
+				{
+					throw WARNING2("couldn't open exec file: " + args[0], errno);
+				}
+
+			}
 		}
 		catch (const Warning &e)
 		{
@@ -54,7 +68,7 @@ void SimpleConsole::start()
 	}
 }
 
-void SimpleConsole::callProc(const std::string &dst)
+void SimpleConsole::call_proc(vector<string> &args)
 {
 	int p_response[2]; // output (for dlm) pipe descriptor
 	int p_request[2]; // input (for dlm) pipe descriptor
@@ -62,7 +76,7 @@ void SimpleConsole::callProc(const std::string &dst)
 
 	if (pipe(p_response) < 0 || pipe(p_request) < 0)
 	{
-		throw WARNING("couldn't create pipe"); // TODO uzupelnic o nr bledu z errno
+		throw WARNING2("couldn't create pipe", errno);
 	}
 
 	if ((child_pid = fork()) == 0)
@@ -73,33 +87,23 @@ void SimpleConsole::callProc(const std::string &dst)
 		sprintf(buff1, "%d", p_request[WRITE_DESC]);
 		sprintf(buff2, "%d", p_response[READ_DESC]);
 
-		//wydziel nazwę programu i przekazane argumenty
-		string param;
-		stringstream sstream(dst);
-
-		vector<string> params;
-
-		while (sstream >> param)
-			params.push_back(param);
-
 		//2 na nazwę terminala i parametr -e,
 		//2 dodatkowe na deskryptory i jeden na NULL
-		unsigned param_num = params.size() + 5;
+		unsigned param_num = args.size() + 5;
 
 		char * arg[param_num];
-		arg[0] = (char*)string(config_.getValue("terminal")).c_str();
-		arg[1] = (char*)string("-e").c_str();
-		for(unsigned i = 2; i < param_num - 3; ++i)
+		arg[0] = (char*) string(config_.getValue("terminal")).c_str();
+		arg[1] = (char*) string("-e").c_str();
+		for (unsigned i = 2; i < param_num - 3; ++i)
 		{
-			arg[i] = (char*)string(params[i-2]).c_str();
+			arg[i] = (char*) string(args[i - 2]).c_str();
 		}
-		arg[param_num-3] = (char*)buff2;
-		arg[param_num-2] = (char*)buff1;
-		arg[param_num-1] = NULL;
+		arg[param_num - 3] = (char*) buff2;
+		arg[param_num - 2] = (char*) buff1;
+		arg[param_num - 1] = NULL;
 
-		execv(string(config_.getValue("terminal")).c_str(),arg);
+		execv(string(config_.getValue("terminal")).c_str(), arg);
 
-		throw WARNING2("couldn't open exec file: " + dst, errno);
 	}
 	else if (child_pid == -1)
 	{
@@ -115,6 +119,20 @@ void SimpleConsole::callProc(const std::string &dst)
 	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
 	cleaner_->addClient(child_pid, thread);
+}
+
+vector<string> SimpleConsole::parse_arguments(string &args)
+{
+	vector<string> program_args;
+	string param;
+	stringstream sstream(args);
+
+	while (sstream >> param)
+	{
+		program_args.push_back(param);
+	}
+
+	return program_args;
 }
 
 }

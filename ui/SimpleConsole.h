@@ -10,6 +10,7 @@
 #define SIMPLECONSOLE_H_
 #include <iostream>
 #include <string>
+#include <vector>
 #include "../lock_manager/LockManager.h"
 #include "../config/Config.h"
 #include "../listener/Cleaner.h"
@@ -37,7 +38,13 @@ private:
 	 *
 	 * @param dst - string to call
 	 */
-	void callProc(const std::string &dst); // TODO uzupelnic o argumenty
+	void call_proc(std::vector<std::string> &args);
+	/**
+	 * parse arguments passed to console
+	 *
+	 * @param args - string of arguments
+	 */
+	std::vector<std::string> parse_arguments(std::string &args);
 	/** input stream */
 	std::istream& in_;
 	/** output stream */
