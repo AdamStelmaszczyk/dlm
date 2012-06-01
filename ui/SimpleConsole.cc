@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <vector>
 #include <sstream>
+#include <fstream>
 #include <pthread.h>
 
 #include "SimpleConsole.h"
@@ -71,11 +72,6 @@ void SimpleConsole::callProc(const std::string &dst)
 		char buff1[256], buff2[256]; // converting descriptor number to cstring
 		sprintf(buff1, "%d", p_request[WRITE_DESC]);
 		sprintf(buff2, "%d", p_response[READ_DESC]);
-		// lepiej uzyj execv
-
-		// deskryptory na koncu argumentow powinny byc przekazywane
-		// w takiej kolejnosci jak jest teraz
-		//execl(dst.c_str(), dst.c_str(), buff2, buff1, (void*) 0); // last two argvs should be pipe descriptors
 
 		//wydziel nazwę programu i przekazane argumenty
 		string param;
@@ -95,28 +91,26 @@ void SimpleConsole::callProc(const std::string &dst)
 		arg[1] = (char*)string("-e").c_str();
 		for(unsigned i = 2; i < param_num - 3; ++i)
 		{
-			arg[i] = (char*)string(params[i]).c_str();
+			arg[i] = (char*)string(params[i-2]).c_str();
 		}
 		arg[param_num-3] = (char*)buff2;
 		arg[param_num-2] = (char*)buff1;
 		arg[param_num-1] = NULL;
+
 		execv(string(config_.getValue("terminal")).c_str(),arg);
 
 		throw WARNING2("couldn't open exec file: " + dst, errno);
-		// FIXME: po wpisaniu błędnej nazwy to idzie dalej i mamy np. komunikat "[new instance of process]".
-		// nie zaglebialem sie wystarczajaco, zeby zamiast komentarza wstawic sam "return",
-		// bo bardzo prawd. że trzeba pozamykać wszystko co sie otworzyło do tej pory
 	}
 	else if (child_pid == -1)
 	{
 		throw WARNING("couldn't create child process");
 	}
 
-	cout << "zamykam" << endl;
 	close(p_response[READ_DESC]);
 	close(p_request[WRITE_DESC]);
 
 	// start listener
+
 	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lockManager_); // FIXME memory leak
 	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
