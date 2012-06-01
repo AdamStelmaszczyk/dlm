@@ -2,7 +2,8 @@
  * LockManager.cc
  *
  * @class LockManager
- * @date 30-05-2012
+ * @brief Stores info about locks, provides methods to lock and unlock resource.
+ * @date 01-06-2012
  */
 
 #include <stack>
@@ -11,9 +12,9 @@
 #include <sys/time.h>
 
 #include "Lock.h"
-#include "WaitingLock.h"
 #include "LockOwner.h"
 #include "LockManager.h"
+#include "WaitingLock.h"
 
 using namespace std;
 using namespace dlm;
@@ -156,7 +157,6 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 int LockManager::tryLock(TryLockRequest request, pid_t pid)
 {
 	cout << "process " << pid << " tries lock " << request.locktype << " on RID " << request.rid << endl;
-
 	// Iterate through all active locks.
 	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
 	{

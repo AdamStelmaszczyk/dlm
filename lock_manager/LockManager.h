@@ -3,7 +3,7 @@
  *
  * @class LockManager
  * @brief Stores info about locks, provides methods to lock and unlock resource.
- * @date 30-05-2012
+ * @date 01-06-2012
  */
 
 #ifndef LOCKMANAGER_H_
