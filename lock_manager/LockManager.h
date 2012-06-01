@@ -75,8 +75,8 @@ public:
 	virtual ~LockManager();
 
 private:
-	void awakeWaiting(rid_t rid);
-	struct timespec getTimespec(LockRequest& request);
+	void awake_waiting(rid_t rid);
+	struct timespec get_timespec(LockRequest& request);
 
 	std::list<Lock> active_locks;
 	std::list<WaitingLock> waiting_locks;

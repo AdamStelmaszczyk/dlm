@@ -36,7 +36,7 @@ int DLM_init(int argc, char **argv)
  * @return value of dlm procedure call
  */
 template<typename T>
-int sendMesage(char instr_type, const T data)
+int send_message(char instr_type, const T data)
 {
 	// write request type to pipe
 	if (!p_request || !p_response)
@@ -72,14 +72,14 @@ int DLM_lock(rid_t resource_id, LockType lock_type, time_t timeout)
 	lock_request.rid = resource_id;
 	lock_request.locktype = lock_type;
 	lock_request.timeout = timeout;
-	return sendMesage('l', lock_request);
+	return send_message('l', lock_request);
 }
 
 int DLM_unlock(rid_t resource_id)
 {
 	UnlockRequest unlock_request;
 	unlock_request.rid = resource_id;
-	return sendMesage('u', unlock_request);
+	return send_message('u', unlock_request);
 }
 
 int DLM_trylock(rid_t resource_id, LockType lock_type)
@@ -87,5 +87,5 @@ int DLM_trylock(rid_t resource_id, LockType lock_type)
 	TryLockRequest try_request;
 	try_request.rid = resource_id;
 	try_request.locktype = lock_type;
-	return sendMesage('t', try_request);
+	return send_message('t', try_request);
 }

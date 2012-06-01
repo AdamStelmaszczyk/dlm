@@ -69,7 +69,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		}
 		else
 		{
-			struct timespec timeout = getTimespec(request);
+			struct timespec timeout = get_timespec(request);
 			int result = pthread_cond_timedwait(&cond, &mutex, &timeout);
 
 			if (result == ETIMEDOUT)
@@ -97,7 +97,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 	return OK;
 }
 
-void LockManager::awakeWaiting(rid_t rid)
+void LockManager::awake_waiting(rid_t rid)
 {
 	// Collect all locks that are waiting on given RID.
 	stack<WaitingLock> locks_stack;
@@ -145,7 +145,7 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 			active_locks.remove(*it);
 
 			// Awake processes waiting for this RID.
-			awakeWaiting(request.rid);
+			awake_waiting(request.rid);
 
 			// One process could have only one lock on this RID, so we are done.
 			return OK;
@@ -209,7 +209,7 @@ rid_t LockManager::create_file_resource(const char *path)
 	return it->second;
 }
 
-struct timespec LockManager::getTimespec(LockRequest& request)
+struct timespec LockManager::get_timespec(LockRequest& request)
 {
 	struct timeval now;
 	struct timespec timeout;
