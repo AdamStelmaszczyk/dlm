@@ -91,18 +91,18 @@ void SimpleConsole::call_proc(vector<string> &args)
 		int arg_num = args.size() + 5;
 
 		char *terminal_arg[arg_num];
-		char *terminal = (char*) config.getValue("terminal").c_str();
+		char *terminal = (char*) config.get_value("terminal").c_str();
 
 		terminal_arg[0] = terminal;
 		terminal_arg[1] = (char*) "-e";
 
 		for (int i = 2; i < arg_num - 3; i++)
 		{
-			terminal_arg[i] = (char*) string(args[i - 2]).c_str();
+			terminal_arg[i] = (char*) args[i - 2].c_str();
 		}
 
-		terminal_arg[arg_num - 3] = (char*) desc_read;
-		terminal_arg[arg_num - 2] = (char*) desc_write;
+		terminal_arg[arg_num - 3] = desc_read;
+		terminal_arg[arg_num - 2] = desc_write;
 		terminal_arg[arg_num - 1] = NULL;
 
 		execv(terminal, terminal_arg);
@@ -115,8 +115,7 @@ void SimpleConsole::call_proc(vector<string> &args)
 	close(p_response[READ_DESC]);
 	close(p_request[WRITE_DESC]);
 
-	// start listener
-
+	// Start listener.
 	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lock_manager); // FIXME memory leak
 	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);

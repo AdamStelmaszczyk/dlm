@@ -19,7 +19,7 @@ Config::~Config()
 {
 }
 
-std::string Config::getValue(const std::string& property_name) const
+std::string Config::get_value(const std::string& property_name) const
 {
 	map<string, string>::const_iterator iterator = config_map.find(property_name);
 	if (iterator == config_map.end())

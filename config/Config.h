@@ -26,7 +26,7 @@ public:
 	 *
 	 * @param property_name Name of the property.
 	 */
-	std::string getValue(const std::string& property_name) const;
+	std::string get_value(const std::string& property_name) const;
 private:
 	/** Map of property-value pairs*/
 	std::map<std::string, std::string> config_map;
