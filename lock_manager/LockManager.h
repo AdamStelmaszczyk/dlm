@@ -24,12 +24,6 @@
 namespace dlm
 {
 
-#define OK					0
-#define ALREADY_LOCKED 		1
-#define TIMEOUT 			2
-#define NO_SUCH_LOCK 		3
-#define ALREADY_HAVE_LOCK 	4
-
 class LockManager
 {
 public:

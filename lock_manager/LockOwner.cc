@@ -7,7 +7,8 @@
 
 #include "LockOwner.h"
 
-using namespace dlm;
+namespace dlm
+{
 
 LockOwner::LockOwner(pid_t pid)
 {
@@ -17,4 +18,6 @@ LockOwner::LockOwner(pid_t pid)
 bool LockOwner::operator()(const Lock& lock)
 {
 	return lock.pid == pid;
+}
+
 }

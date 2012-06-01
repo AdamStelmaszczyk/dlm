@@ -1,5 +1,3 @@
-// TODO obsluga sygnalow SIG_CHLD i podobnych - chyba juz zrobione mozna skasowac?
-
 #include <pthread.h>
 #include <iostream>
 #include <unistd.h>
@@ -28,20 +26,16 @@ Listener::Listener(int p_response, int p_request, pid_t client, LockManager& lm)
 void Listener::start()
 {
 	char request_type = 0;
-	unsigned size = 0;
-	Logger::getInstance().log("[%s]", "new instance of process");
+	Logger::getInstance().log("[%s: %d]", "new instance of process", client_);
 	while (1)
 	{
 		try
 		{
 			// first of all, read request message header
-			while ((size = read(p_request_, &request_type, sizeof(request_type))) == 0)
-				;
-			if (size == 0)
-			{
-				throw ERROR2("Couldn't read request message header", errno);
-			}
-			Logger::getInstance().log("[%s]", "got new message from process");
+			if (read(p_request_, &request_type, sizeof(request_type)) < (int)sizeof(request_type))
+				break; // pipe was closed
+
+			Logger::getInstance().log("[%s: %c]", "got new message from process", request_type);
 
 			switch (request_type)
 			{
@@ -78,7 +72,7 @@ void Listener::handleLockRequest()
 {
 	LockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &request, sizeof(LockRequest)) == -1)
+	if (read(p_request_, &request, sizeof(LockRequest)) < (int)sizeof(LockRequest))
 	{
 		throw ERROR2("Couldn't read lock message from pipe", errno);
 	}
@@ -90,7 +84,7 @@ void Listener::handleTryLockRequest()
 {
 	TryLockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &request, sizeof(TryLockRequest)) == -1)
+	if (read(p_request_, &request, sizeof(TryLockRequest)) < (int)sizeof(TryLockRequest))
 	{
 		throw ERROR2("Couldn't read trylock message from pipe", errno);
 	}
@@ -102,7 +96,7 @@ void Listener::handleUnlockRequest()
 {
 	UnlockRequest request;
 	// now we read args for LockManager
-	if (read(p_request_, &request, sizeof(UnlockRequest)) == -1)
+	if (read(p_request_, &request, sizeof(UnlockRequest)) < (int)sizeof(UnlockRequest))
 	{
 		throw ERROR2("Couldn't read unlock message from pipe", errno);
 	}
@@ -112,7 +106,7 @@ void Listener::handleUnlockRequest()
 
 void Listener::sendResponse(int result)
 {
-	if (write(p_response_, &result, sizeof(int)) == -1)
+	if (write(p_response_, &result, sizeof(int)) < (int)sizeof(int))
 	{
 		throw ERROR("Couldn't respond to client");
 	}

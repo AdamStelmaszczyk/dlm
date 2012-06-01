@@ -9,6 +9,16 @@
 #ifndef DLM_H_
 #define DLM_H_
 
+#define OK					0
+#define ALREADY_LOCKED 		1
+#define TIMEOUT 			2
+#define NO_SUCH_LOCK 		3
+#define ALREADY_HAVE_LOCK 	4
+#define NOT_DLM_CHILD		5 // there's no pipes in argv
+#define DLM_NOT_INITIALIZED 6
+#define NO_CONNECTION 		7 // when we can't read/write to pipe
+
+
 /** Resource id type. */
 typedef unsigned int rid_t;
 
@@ -31,7 +41,7 @@ enum LockType
  *
  * @param argc - argc from main (args count)
  * @param argv - argv from main (args values)
- * @return // TODO ustalic: 0 lub jakis kod bledu.
+ * @return
  */
 int DLM_init(int argc, char **argv);
 

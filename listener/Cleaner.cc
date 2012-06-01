@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sys/wait.h>
 #include <signal.h>
+#include "../logger/Logger.h"
 
 using namespace std;
 
@@ -29,7 +30,6 @@ void Cleaner::start()
 	sigset_t sigs_to_catch;
 	sigemptyset(&sigs_to_catch);
 	sigaddset(&sigs_to_catch, SIGCHLD);
-	// sigaddset(&sigs_to_catch, SIGPIPE); only SIGCHLD ( TODO how to get pid from SIGPIPE?)
 	for (;;)
 	{
 		sigwaitinfo(&sigs_to_catch, &info);
@@ -38,7 +38,7 @@ void Cleaner::start()
 		{
 			// we ommit trapped and stopped child processes
 			pid_t pid = wait(NULL); // get pid of terminated process
-			cout << "process " << pid << " has ended" << endl;
+			Logger::getInstance().log("[%d %s]", pid, "has ended");
 			removeClient(pid);
 		}
 	}

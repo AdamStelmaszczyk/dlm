@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <unistd.h>
+#include <errno.h>
 
 #include "dlm.h"
 #include "../lock_manager/LockRequest.h"
@@ -17,13 +18,13 @@ int DLM_init(int argc, char **argv)
 {
 	if (argc < 3)
 	{
-		return -1; // TODO errno
+		return NOT_DLM_CHILD;
 	}
 	p_response = atoi(argv[argc - 2]);
 	p_request = atoi(argv[argc - 1]);
 	if (!p_request || !p_response)
 	{
-		return -1; // TODO errno
+		return NOT_DLM_CHILD;
 	}
 	return 0;
 }
@@ -35,26 +36,26 @@ int DLM_init(int argc, char **argv)
  * @return value of dlm procedure call
  */
 template<typename T>
-int sendMesage(char instr_type, T data)
+int sendMesage(char instr_type, const T data)
 {
 	// write request type to pipe
 	if (!p_request || !p_response)
 	{
-		return -1; // TODO errno - DLM niezainicjowany
+		return DLM_NOT_INITIALIZED;
 	}
-	if (write(p_request, &instr_type, sizeof(instr_type)) == -1) // TODO ciagnac w petli while az zapisze wszystko
+	if (write(p_request, &instr_type, sizeof(instr_type)) < (int)sizeof(instr_type))
 	{
-		return -1; // TODO errno
+		return NO_CONNECTION;
 	}
-	if (write(p_request, &data, sizeof(T)) == -1) // TODO ciagnac w petli while az zapisze wszystko
+	if (write(p_request, &data, sizeof(T)) < (int)sizeof(T))
 	{
-		return -1; // TODO errno
+		return NO_CONNECTION;
 	}
 	// read response from pipe
 	int result;
-	if (read(p_response, &result, sizeof(result)) == -1)
+	if (read(p_response, &result, sizeof(result)) < (int)sizeof(result))
 	{
-		return -1; // TODO errno
+		return NO_CONNECTION;
 	}
 	return result;
 }
