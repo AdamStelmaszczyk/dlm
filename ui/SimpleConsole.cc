@@ -83,29 +83,37 @@ void SimpleConsole::call_proc(vector<string> &args)
 	{
 		close(p_response[WRITE_DESC]);
 		close(p_request[READ_DESC]);
-		char desc_write[256], desc_read[256]; // converting descriptor number to cstring
+
+		// Converting descriptor number to c-string.
+		char desc_write[32], desc_read[32];
 		sprintf(desc_write, "%d", p_request[WRITE_DESC]);
 		sprintf(desc_read, "%d", p_response[READ_DESC]);
 
-		// 1 na nazwę terminala, 2 dodatkowe na deskryptory i 1 na NULL.
-		unsigned param_num = args.size() + 4;
+		// + 5 because 1 for terminal name, 1 for "-e", 2 arguments for descriptors and 1 for NULL.
+		int arg_num = args.size() + 5;
 
-		char *arg[param_num];
+		char *terminal_arg[arg_num];
 		char *terminal = (char*) config_.getValue("terminal").c_str();
 
-		arg[0] = terminal;
+		terminal_arg[0] = terminal;
+		terminal_arg[1] = (char*) "-e";
 
-		for (unsigned i = 1; i < param_num - 3; ++i)
+		for (int i = 2; i < arg_num - 3; ++i)
 		{
-			arg[i] = (char*) string(args[i - 1]).c_str();
+			terminal_arg[i] = (char*) string(args[i - 2]).c_str();
 		}
 
-		arg[param_num - 3] = (char*) desc_read;
-		arg[param_num - 2] = (char*) desc_write;
-		arg[param_num - 1] = NULL;
+		terminal_arg[arg_num - 3] = (char*) desc_read;
+		terminal_arg[arg_num - 2] = (char*) desc_write;
+		terminal_arg[arg_num - 1] = NULL;
 
-		execv(terminal, arg);
+		cout << terminal << " " << endl;
+		for (int i = 0; i < arg_num; i++)
+		{
+			cout << terminal_arg[i] << endl;
+		}
 
+		execv(terminal, terminal_arg);
 	}
 	else if (child_pid == -1)
 	{
