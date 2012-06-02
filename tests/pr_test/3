@@ -1,0 +1,2 @@
+./lock_test 1 2 900 3
+./lock_test 1 2 700 2
