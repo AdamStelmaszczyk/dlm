@@ -10,10 +10,6 @@
 
 using namespace dlm;
 
-Lock::Lock()
-{
-}
-
 Lock::Lock(LockRequest request, pid_t pid)
 {
 	this->request = request;

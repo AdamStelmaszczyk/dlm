@@ -22,7 +22,6 @@ public:
 	LockRequest request;
 	pid_t pid;
 
-	Lock();
 	Lock(LockRequest request, pid_t pid);
 	bool operator==(const Lock& other) const;
 };
