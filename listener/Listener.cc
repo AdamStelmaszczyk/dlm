@@ -51,15 +51,17 @@ void Listener::start()
 					break;
 			}
 		}
-		catch (const Warning &w)
-		{
-			Logger::getInstance().log(w.what());
-			continue;
-		}
 		catch (const Error &e)
 		{
-			Logger::getInstance().log(e.what());
+			char message[256];
+			Logger::getInstance().log(e.what(message));
 			break;
+		}
+		catch (const Warning &w)
+		{
+			char message[256];
+			Logger::getInstance().log(w.what(message));
+			continue;
 		}
 	}
 	Logger::getInstance().log("[%s]", "listener stopped");
