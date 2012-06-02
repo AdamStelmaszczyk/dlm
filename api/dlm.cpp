@@ -9,8 +9,8 @@
 #include "../lock_manager/UnlockRequest.h"
 #include "../lock_manager/TryLockRequest.h"
 
-int p_request = 0; // pipe descriptor number where client puts requests
-int p_response = 0; // pipe descriptor number where client puts responses
+int p_request = 0; // Pipe descriptor number where client puts requests.
+int p_response = 0; // Pipe descriptor number where client puts responses.
 
 using namespace dlm;
 
@@ -43,27 +43,21 @@ int send_message(char instr_type, const T data)
 	{
 		return DLM_NOT_INITIALIZED;
 	}
-	if (write(p_request, &instr_type, sizeof(instr_type)) < (int)sizeof(instr_type))
+	if (write(p_request, &instr_type, sizeof(instr_type)) < (int) sizeof(instr_type))
 	{
 		return NO_CONNECTION;
 	}
-	if (write(p_request, &data, sizeof(T)) < (int)sizeof(T))
+	if (write(p_request, &data, sizeof(T)) < (int) sizeof(T))
 	{
 		return NO_CONNECTION;
 	}
 	// read response from pipe
 	int result;
-	if (read(p_response, &result, sizeof(result)) < (int)sizeof(result))
+	if (read(p_response, &result, sizeof(result)) < (int) sizeof(result))
 	{
 		return NO_CONNECTION;
 	}
 	return result;
-}
-
-int DLM_init_file_resource(char** dest)
-{
-	// TODO implement
-	return 0;
 }
 
 int DLM_lock(rid_t resource_id, LockType lock_type, time_t timeout)

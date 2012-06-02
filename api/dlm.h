@@ -46,17 +46,6 @@ enum LockType
 int DLM_init(int argc, char **argv);
 
 /**
- * Checks whether file exists and creates new resource.
- *
- * @return id of resource or -1 if
- */
-// TODO ew to mozna sobie odpuscic - zasob w dlm o podanym id bedzie
-// tworzony w momencie pierwszego wywolania dlm_lock, tylko to wtedy
-// jest malo praktyczne (procesy potomne (klienci) musza znac id
-// poszczegolnych zasobow)
-int DLM_init_file_resource(char** dest);
-
-/**
  *	Sends lock resource request to dlm parent.
  *
  * @param resource_id
