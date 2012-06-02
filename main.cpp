@@ -10,8 +10,16 @@
 using namespace std;
 using namespace dlm;
 
+//ifstream *input_file = NULL;
+//ofstream *output_file = NULL;
+//
+//void parse_args(int argc, char *argv[])
+//{
+//}
+
 int main(int argc, char *argv[])
 {
+
 	Config config("config.cfg");
 	LockManager lm;
 
@@ -24,7 +32,8 @@ int main(int argc, char *argv[])
 	pthread_sigmask(SIG_BLOCK, &sigs_to_block, NULL);
 
 	SimpleConsole console(cin, cout, config, lm);
-	console.start();
-
-	return 0;
+	int result = console.start();
+//	delete input_file;
+//	delete output_file;
+	return result;
 }

@@ -29,7 +29,7 @@ SimpleConsole::~SimpleConsole()
 	delete cleaner_;
 }
 
-void SimpleConsole::start()
+int SimpleConsole::start()
 {
 	string instr;
 	Logger::getInstance().log("dlm console started");
@@ -63,9 +63,15 @@ void SimpleConsole::start()
 		catch (const std::exception &e)
 		{ // other exceptions - here is also Error
 			Logger::getInstance().log("[%s]", e.what());
-			exit(-1); // we don't know what to do, let's kill him (dlm)
+			return -1;
 		}
 	}
+	// in corrupted.
+
+	// Wait for started threads.
+	for(unsigned i = 0; i < started_threads.size(); ++i)
+		pthread_join(started_threads[i], NULL);
+	return 0;
 }
 
 void SimpleConsole::call_proc(vector<string> &args)
@@ -118,9 +124,10 @@ void SimpleConsole::call_proc(vector<string> &args)
 	close(p_request[WRITE_DESC]);
 
 	// Start listener.
-	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lock_manager); // FIXME memory leak
-	pthread_t thread; // FIXME zapamietac moze gdzies strukture watku ?
+	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lock_manager);
+	pthread_t thread;
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
+	started_threads.push_back(thread);
 	cleaner_->addClient(child_pid, thread);
 }
 

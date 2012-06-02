@@ -31,7 +31,7 @@ public:
 	 * starts console, waits for input
 	 * FIXME na razie tylko po prostu wolanie programu bez parametrow
 	 */
-	void start();
+	int start();
 private:
 	/**
 	 * calls new process and listener for that process
@@ -55,6 +55,9 @@ private:
 	LockManager &lock_manager;
 	/** cleaner to cleanup after dead childs */
 	Cleaner* cleaner_;
+	/** pthread structures of started threads - we must
+	 *  wait until they stop. */
+	std::vector<pthread_t> started_threads;
 };
 
 }
