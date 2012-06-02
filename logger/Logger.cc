@@ -1,20 +1,22 @@
-#include "Logger.h"
 #include <cstdio>
 
-namespace dlm
-{
+#include "Logger.h"
+
+using namespace dlm;
+using namespace std;
+
 Logger& Logger::getInstance()
 {
 	static Logger instance;
 	return instance;
 }
 
-void Logger::setOutputStream(std::ostream& output)
+void Logger::setOutputStream(ostream &output)
 {
 	output_stream = &output;
 }
 
-void Logger::log(const char* format, ... )
+void Logger::log(const char *format, ... )
 {
 	char buffer[1024];
     va_list argptr;
@@ -22,7 +24,5 @@ void Logger::log(const char* format, ... )
     vsprintf(buffer, format, argptr);
     va_end(argptr);
 
-    *output_stream << buffer << std::endl;
-}
-
+    *output_stream << buffer << endl;
 }

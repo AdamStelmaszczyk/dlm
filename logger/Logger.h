@@ -7,6 +7,7 @@
 
 #ifndef LOGGER_H_
 #define LOGGER_H_
+
 #include <ostream>
 #include <iostream>
 #include <string>
@@ -14,30 +15,31 @@
 
 namespace dlm
 {
+
 class Logger
 {
 public:
 	/**
-	 * Returns an instance of a logger class
+	 * Returns an instance of a logger class.
 	 */
 	static Logger& getInstance();
+
 	/**
-	 * Set custom output stream
+	 * Set custom output stream.
 	 *
-	 * @param output
+	 * @param output Output stream.
 	 */
-	void setOutputStream(std::ostream& output);
+	void setOutputStream(std::ostream &output);
+
 	/**
-	 * Logs message, uses variable argument list to provide flexible logging
-	 *
+	 * Logs message, uses variable argument list to provide flexible logging.
 	 */
-	void log(const char* format, ...);
+	void log(const char *format, ...);
+
 private:
-	Logger(){}
-	Logger(const Logger&);
-	/** output stream */
-	std::ostream* output_stream;
+	std::ostream *output_stream;
 };
+
 }
 
 #endif /* LOGGER_H_ */
