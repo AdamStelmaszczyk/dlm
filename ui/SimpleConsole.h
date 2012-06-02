@@ -57,5 +57,6 @@ private:
 	Cleaner* cleaner_;
 };
 
-} /* namespace dlm */
+}
+
 #endif /* SIMPLECONSOLE_H_ */

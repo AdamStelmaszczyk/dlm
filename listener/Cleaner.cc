@@ -6,22 +6,21 @@
  * @date 29-05-2012
  */
 
-#include "Cleaner.h"
 #include <sys/types.h>
 #include <iostream>
 #include <sys/wait.h>
 #include <signal.h>
+
+#include "Cleaner.h"
 #include "../logger/Logger.h"
 
 using namespace std;
-
-namespace dlm
-{
+using namespace dlm;
 
 Cleaner::Cleaner(LockManager &lm) :
-		lm_(lm)
+		lock_manager(lm)
 {
-	pthread_mutex_init(&procs_mutex_, NULL);
+	pthread_mutex_init(&procs_mutex, NULL);
 }
 
 void Cleaner::start()
@@ -36,8 +35,8 @@ void Cleaner::start()
 		int si_code = info.si_code;
 		if (si_code == CLD_EXITED || si_code == CLD_KILLED || si_code == CLD_DUMPED)
 		{
-			// we ommit trapped and stopped child processes
-			pid_t pid = wait(NULL); // get pid of terminated process
+			// Omit trapped and stopped child processes.
+			pid_t pid = wait(NULL); // Get PID of terminated process.
 			Logger::getInstance().log("[%d %s]", pid, "has ended");
 			removeClient(pid);
 		}
@@ -46,23 +45,23 @@ void Cleaner::start()
 
 void Cleaner::addClient(pid_t process, pthread_t listener)
 {
-	pthread_mutex_lock(&procs_mutex_);
-	// critical section
-	procs_.insert(make_pair(process, listener));
-	pthread_mutex_unlock(&procs_mutex_);
+	pthread_mutex_lock(&procs_mutex);
+	// Critical section.
+	procs.insert(make_pair(process, listener));
+	pthread_mutex_unlock(&procs_mutex);
 }
 
 void Cleaner::removeClient(pid_t process)
 {
-	pthread_mutex_lock(&procs_mutex_);
-	map<pid_t, pthread_t>::iterator it = procs_.find(process); // finds listener thread FIXME quite danger, I don't check if process realy exist in map
-	if (it != procs_.end())
+	pthread_mutex_lock(&procs_mutex);
+	map<pid_t, pthread_t>::iterator it = procs.find(process); // Finds listener thread.
+	if (it != procs.end())
 	{
 		pthread_t t = it->second;
-		pthread_cancel(t); // stop listeners thread
-		lm_.cleanup(process);
+		pthread_cancel(t); // Stop listeners thread.
+		lock_manager.cleanup(process);
 	}
-	pthread_mutex_unlock(&procs_mutex_);
+	pthread_mutex_unlock(&procs_mutex);
 }
 
 Cleaner::~Cleaner()
@@ -71,10 +70,8 @@ Cleaner::~Cleaner()
 
 void* start_cleaner(void *ptr)
 {
-	// here starts new thread
+	// Start new thread.
 	Cleaner *cleaner = (Cleaner*) ptr;
 	cleaner->start();
 	return NULL;
-}
-
 }

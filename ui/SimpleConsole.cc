@@ -10,6 +10,7 @@
 #include "../exceptions/Warning.h"
 #include "../listener/Listener.h"
 #include "../logger/Logger.h"
+#include "../listener/Cleaner.h"
 
 using namespace std;
 using namespace dlm;
