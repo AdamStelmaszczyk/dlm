@@ -2,7 +2,7 @@
  * Listener.h
  *
  * @class Listener
- * @brief Brief description.
+ * @brief Communicates with clients.
  * @date 20-05-2012
  */
 
@@ -10,9 +10,9 @@
 #define LISTENER_H_
 
 #include "../lock_manager/LockManager.h"
+
 namespace dlm
 {
-void* start_listener(void *ptr);
 
 class Listener
 {
@@ -22,7 +22,7 @@ public:
 	virtual ~Listener();
 private:
 	/**
-	 * request handlers
+	 * Request handlers.
 	 */
 	void handleLockRequest();
 	void handleTryLockRequest();
@@ -31,18 +31,20 @@ private:
 	/**
 	 * Puts response to output pipe.
 	 *
-	 * @param result
+	 * @param result Response.
 	 */
 	void sendResponse(int result);
 
-	/** pipe's for request (from client) and response (to client) */
-	int p_response_, p_request_;
-	/** pid of child process (client) communicating with this listener */
-	pid_t client_;
-	/** reference to lock manager providing dlm functions */
-	LockManager &lockManager_;
-	friend void* start_listener(void *ptr);
+	/** Pipe's for request (from client) and response (to client). */
+	int p_response, p_request;
+	/** PID of child process (client) communicating with this listener. */
+	pid_t client;
+	/** Reference to lock manager providing DLM functions. */
+	LockManager &lock_manager;
 };
 
-} /* namespace dlm */
+}
+
+void* start_listener(void *ptr);
+
 #endif /* LISTENER_H_ */
