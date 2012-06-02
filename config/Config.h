@@ -1,7 +1,7 @@
 /**
  * Config.h
  * @class Config
- * @brief Provides configuration file handling
+ * @brief Handles configuration file.
  * @date 27-05-2012
  */
 
@@ -28,8 +28,9 @@ public:
 	 */
 	std::string get_value(const std::string& property_name) const;
 private:
-	/** Map of property-value pairs*/
+	/** Map of property-value pairs. */
 	std::map<std::string, std::string> config_map;
+	/** Name of config file. */
 	const std::string FILENAME;
 
 	void readInput();

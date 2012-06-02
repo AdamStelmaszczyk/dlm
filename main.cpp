@@ -1,11 +1,11 @@
 #include <iostream>
 #include <signal.h>
 #include <pthread.h>
+
+#include "api/dlm.h"
 #include "config/Config.h"
 #include "ui/SimpleConsole.h"
 #include "lock_manager/LockManager.h"
-
-#include "api/dlm.h"
 
 using namespace std;
 using namespace dlm;
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	LockManager lm;
 
 	// Block SIGCHLD signals from children, cleaner will handle them.
-	signal(SIGPIPE, SIG_IGN); // it's easier to handle corrupted pipe with write/read return code
+	signal(SIGPIPE, SIG_IGN); // It's easier to handle corrupted pipe with write/read return code.
 	sigset_t sigs_to_block;
 	sigemptyset(&sigs_to_block);
 	sigaddset(&sigs_to_block, SIGCHLD);

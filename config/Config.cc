@@ -5,9 +5,7 @@
 #include "Config.h"
 
 using namespace std;
-
-namespace dlm
-{
+using namespace dlm;
 
 Config::Config(const std::string filename) :
 		FILENAME(filename)
@@ -55,6 +53,4 @@ void Config::readInput()
 	}
 
 	config_file.close();
-}
-
 }
