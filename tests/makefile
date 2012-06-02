@@ -1,0 +1,2 @@
+all: test_case.cpp ../api/dlm.cpp ../lock_manager/LockManager.cc ../lock_manager/Lock.cc ../lock_manager/LockOwner.cc ../lock_manager/WaitingLock.cc ../ui/SimpleConsole.cc ../config/Config.cc ../listener/Cleaner.cc ../logger/Logger.cc ../listener/Listener.cc
+	g++ test_case.cpp ../api/dlm.cpp ../lock_manager/LockManager.cc  ../lock_manager/Lock.cc ../lock_manager/LockOwner.cc ../lock_manager/WaitingLock.cc ../ui/SimpleConsole.cc ../config/Config.cc ../listener/Cleaner.cc ../logger/Logger.cc ../listener/Listener.cc -lpthread -o test_case
