@@ -10,7 +10,7 @@
 using namespace std;
 using namespace dlm;
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	Config config("config.cfg");
 	LockManager lm;

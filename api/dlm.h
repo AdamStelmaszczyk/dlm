@@ -3,7 +3,7 @@
  *
  * @class dlm
  * @brief Distributed Lock Manager declarations.
- * @date 20-05-2012
+ * @date 02-06-2012
  */
 
 #ifndef DLM_H_
@@ -14,10 +14,9 @@
 #define TIMEOUT 			2
 #define NO_SUCH_LOCK 		3
 #define ALREADY_HAVE_LOCK 	4
-#define NOT_DLM_CHILD		5 // there's no pipes in argv
+#define NOT_DLM_CHILD		5 // There are no pipes in argv.
 #define DLM_NOT_INITIALIZED 6
-#define NO_CONNECTION 		7 // when we can't read/write to pipe
-
+#define NO_CONNECTION 		7 // We can't read/write to pipe.
 
 /** Resource id type. */
 typedef unsigned int rid_t;
@@ -39,36 +38,36 @@ enum LockType
  * Initialize dlm client structures.
  * It should be called before use any of dlm functions.
  *
- * @param argc - argc from main (args count)
- * @param argv - argv from main (args values)
- * @return
+ * @param argc Argc from main (args count).
+ * @param argv Argv from main (args values).
+ * @return If ok - 0, otherwise - error code.
  */
-int DLM_init(int argc, char **argv);
+int DLM_init(int argc, char *argv[]);
 
 /**
- *	Sends lock resource request to dlm parent.
+ * Sends lock resource request to dlm parent.
  *
- * @param resource_id
- * @param lock_type
- * @param timeout 0 == inifinity, -1 == non_block
- * @return // TODO kody powrotu itd.
+ * @param resource_id RID.
+ * @param lock_type Type of lock.
+ * @param timeout If 0 - wait infinitely, if -1 - non-block mode, greater than 0 - timeout in ms.
+ * @return If ok - 0, otherwise - error code.
  */
 int DLM_lock(rid_t resource_id, LockType lock_type, time_t timeout);
 
 /**
  *	Sends unlock resource request to dlm parent.
  *
- * @param resource_id
- * @return // TODO kody powrotu itd.
+ * @param resource_id RID.
+ * @return If ok - 0, otherwise - error code.
  */
 int DLM_unlock(rid_t resource_id);
 
 /**
- * Checks if lock can be provided on resource.
+ * Checks whether we can set a new lock on given resource.
  *
- * @param resource_id
- * @param lock_type
- * @return // TODO kody powrotu itd.
+ * @param resource_id RID.
+ * @param lock_type Type of lock.
+ * @return If ok - 0, otherwise - error code.
  */
 int DLM_trylock(rid_t resource_id, LockType lock_type);
 

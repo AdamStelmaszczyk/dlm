@@ -14,7 +14,7 @@ int p_response = 0; // Pipe descriptor number where client puts responses.
 
 using namespace dlm;
 
-int DLM_init(int argc, char **argv)
+int DLM_init(int argc, char *argv[])
 {
 	if (argc < 3)
 	{
@@ -30,15 +30,15 @@ int DLM_init(int argc, char **argv)
 }
 
 /**
- * template to send data to dlm
+ * Template to send data to DLM.
  *
- * @param data - data to send
- * @return value of dlm procedure call
+ * @param data Data to send.
+ * @return Value of dlm procedure call.
  */
-template<typename T>
+template <typename T>
 int send_message(char instr_type, const T data)
 {
-	// write request type to pipe
+	// Write request type to pipe.
 	if (!p_request || !p_response)
 	{
 		return DLM_NOT_INITIALIZED;
@@ -51,7 +51,7 @@ int send_message(char instr_type, const T data)
 	{
 		return NO_CONNECTION;
 	}
-	// read response from pipe
+	// Read response from pipe.
 	int result;
 	if (read(p_response, &result, sizeof(result)) < (int) sizeof(result))
 	{
