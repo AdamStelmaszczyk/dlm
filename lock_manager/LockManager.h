@@ -19,7 +19,6 @@
 #include "UnlockRequest.h"
 #include "TryLockRequest.h"
 #include "../api/dlm.h"
-#include "../resource/Resource.h"
 
 namespace dlm
 {
