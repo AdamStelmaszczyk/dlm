@@ -33,7 +33,7 @@ int SimpleConsole::start()
 {
 	string instr;
 	Logger::getInstance().log("dlm console started");
-	while (in)
+	while (in.good())
 	{
 		try
 		{
@@ -51,7 +51,7 @@ int SimpleConsole::start()
 				{
 					throw WARNING2("couldn't open exec file: " + args[0], errno);
 				}
-
+				program_file.close();
 			}
 		}
 		catch (const Warning &e)
