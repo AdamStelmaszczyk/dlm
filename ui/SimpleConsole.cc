@@ -68,9 +68,11 @@ int SimpleConsole::start()
 	// in corrupted.
 
 	// Wait for started threads.
-	for(unsigned i = 0; i < started_threads.size(); ++i)
+	for (unsigned i = 0; i < started_threads.size(); ++i)
+	{
 		pthread_join(started_threads[i], NULL);
-	sleep(1); // wait until cleaner get last SIGCHLD (from child, which was handled by last of started_threads)
+	}
+	sleep(1); // Wait until cleaner get last SIGCHLD (from child, which was handled by last of started_threads).
 	return 0;
 }
 
