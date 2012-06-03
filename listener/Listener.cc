@@ -63,7 +63,6 @@ void Listener::start()
 			continue;
 		}
 	}
-//	cleaner.removeClient(client);
 	close(p_request);
 	close(p_response);
 	Logger::getInstance().log("[%s]", "listener stopped");
@@ -121,7 +120,7 @@ void* start_listener(void *ptr)
 {
 	// Starts new thread.
 	pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
-	Listener *listener = (Listener*) ((((ptr))));
+	Listener *listener = (Listener*) ptr;
 	listener->start();
 	return NULL;
 }
