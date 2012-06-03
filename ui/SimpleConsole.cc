@@ -45,6 +45,8 @@ int SimpleConsole::start()
 				if (program_file.is_open())
 				{
 					call_proc(args);
+					//Wait until a new process is executed.
+					sleep(1);
 				}
 				else
 				{
