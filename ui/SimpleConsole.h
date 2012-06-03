@@ -54,7 +54,7 @@ private:
 	/** lock manager for child process */
 	LockManager &lock_manager;
 	/** cleaner to cleanup after dead childs */
-	Cleaner* cleaner_;
+	Cleaner* cleaner;
 	/** pthread structures of started threads - we must
 	 *  wait until they stop. */
 	std::vector<pthread_t> started_threads;

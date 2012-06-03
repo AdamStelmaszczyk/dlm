@@ -19,13 +19,13 @@ SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config, LockMana
 		in(in), out(out), config(config), lock_manager(lm)
 {
 	Logger::getInstance().setOutputStream(out);
-	cleaner_ = new Cleaner(lm);
-	pthread_create(&cleaner_thread, NULL, &start_cleaner, (void*) cleaner_);
+	cleaner = new Cleaner(lm);
+	pthread_create(&cleaner_thread, NULL, &start_cleaner, (void*) cleaner);
 }
 
 SimpleConsole::~SimpleConsole()
 {
-	delete cleaner_;
+	delete cleaner;
 }
 
 int SimpleConsole::start()
@@ -124,11 +124,11 @@ void SimpleConsole::call_proc(vector<string> &args)
 	close(p_request[WRITE_DESC]);
 
 	// Start listener.
-	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lock_manager, *cleaner_);
+	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lock_manager, *cleaner);
 	pthread_t thread;
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
 	started_threads.push_back(thread);
-	cleaner_->addClient(child_pid, thread);
+	cleaner->addClient(child_pid, thread);
 }
 
 vector<string> SimpleConsole::parse_arguments(string &args)
