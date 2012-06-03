@@ -64,6 +64,8 @@ void Listener::start()
 		}
 	}
 //	cleaner.removeClient(client);
+	close(p_request);
+	close(p_response);
 	Logger::getInstance().log("[%s]", "listener stopped");
 }
 
