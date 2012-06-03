@@ -37,7 +37,6 @@ void Cleaner::start()
 		{
 			// Omit trapped and stopped child processes.
 			pid_t pid = wait(NULL); // Get PID of terminated process.
-			Logger::getInstance().log("[%d %s]", pid, "has ended");
 			removeClient(pid);
 		}
 	}
@@ -71,6 +70,9 @@ Cleaner::~Cleaner()
 void* start_cleaner(void *ptr)
 {
 	// Start new thread.
+	sigset_t sigs_to_block;
+	sigemptyset(&sigs_to_block);
+	pthread_sigmask(SIG_BLOCK, &sigs_to_block, NULL); // Unblock all signals.
 	Cleaner *cleaner = (Cleaner*) ptr;
 	cleaner->start();
 	return NULL;

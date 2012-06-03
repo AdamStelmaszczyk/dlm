@@ -12,12 +12,13 @@
 #include "../lock_manager/LockRequest.h"
 #include "../lock_manager/UnlockRequest.h"
 #include "../lock_manager/TryLockRequest.h"
+#include "Cleaner.h"
 
 using namespace std;
 using namespace dlm;
 
-Listener::Listener(int p_response, int p_request, pid_t client, LockManager& lm) :
-		p_response(p_response), p_request(p_request), client(client), lock_manager(lm)
+Listener::Listener(int p_response, int p_request, pid_t client, LockManager& lm, Cleaner& cleaner) :
+		p_response(p_response), p_request(p_request), client(client), lock_manager(lm), cleaner(cleaner)
 {
 }
 
@@ -62,6 +63,7 @@ void Listener::start()
 			continue;
 		}
 	}
+//	cleaner.removeClient(client);
 	Logger::getInstance().log("[%s]", "listener stopped");
 }
 

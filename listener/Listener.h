@@ -13,11 +13,12 @@
 
 namespace dlm
 {
+class Cleaner;
 
 class Listener
 {
 public:
-	Listener(int p_response, int p_request, pid_t client, LockManager &lockManager);
+	Listener(int p_response, int p_request, pid_t client, LockManager &lockManager, Cleaner& cleaner);
 	void start();
 	virtual ~Listener();
 private:
@@ -41,6 +42,8 @@ private:
 	pid_t client;
 	/** Reference to lock manager providing DLM functions. */
 	LockManager &lock_manager;
+	/** Cleaner to cleanup after themself */
+	Cleaner& cleaner;
 };
 
 }

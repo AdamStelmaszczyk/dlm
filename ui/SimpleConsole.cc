@@ -19,9 +19,8 @@ SimpleConsole::SimpleConsole(istream &in, ostream &out, Config &config, LockMana
 		in(in), out(out), config(config), lock_manager(lm)
 {
 	Logger::getInstance().setOutputStream(out);
-	pthread_t t;
 	cleaner_ = new Cleaner(lm);
-	pthread_create(&t, NULL, &start_cleaner, (void*) cleaner_);
+	pthread_create(&cleaner_thread, NULL, &start_cleaner, (void*) cleaner_);
 }
 
 SimpleConsole::~SimpleConsole()
@@ -71,6 +70,7 @@ int SimpleConsole::start()
 	// Wait for started threads.
 	for(unsigned i = 0; i < started_threads.size(); ++i)
 		pthread_join(started_threads[i], NULL);
+	sleep(1); // wait until cleaner get last SIGCHLD (from child, which was handled by last of started_threads)
 	return 0;
 }
 
@@ -124,7 +124,7 @@ void SimpleConsole::call_proc(vector<string> &args)
 	close(p_request[WRITE_DESC]);
 
 	// Start listener.
-	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lock_manager);
+	Listener* listener = new Listener(p_response[WRITE_DESC], p_request[READ_DESC], child_pid, lock_manager, *cleaner_);
 	pthread_t thread;
 	pthread_create(&thread, NULL, &start_listener, (void*) listener);
 	started_threads.push_back(thread);

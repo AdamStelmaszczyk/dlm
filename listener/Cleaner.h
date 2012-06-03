@@ -32,7 +32,6 @@ public:
 	 * @param listener
 	 */
 	void addClient(pid_t process, pthread_t listener);
-
 	void removeClient(pid_t process);
 
 	virtual ~Cleaner();
@@ -43,6 +42,7 @@ private:
 	pthread_mutex_t procs_mutex;
 	/** Reference to lock manager to call cleanup. */
 	LockManager &lock_manager;
+
 };
 
 }

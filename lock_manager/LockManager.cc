@@ -14,6 +14,7 @@
 #include "Lock.h"
 #include "LockOwner.h"
 #include "LockManager.h"
+#include "../logger/Logger.h"
 #include "WaitingLock.h"
 
 using namespace std;
@@ -61,7 +62,7 @@ int LockManager::lock(LockRequest request, pid_t pid)
 		WaitingLock waiting_lock(request, pid, &cond);
 		waiting_locks.push_back(waiting_lock);
 
-		cout << pid << " is waiting for RID " << request.rid << endl;
+		Logger::getInstance().log("[%d is waiting for RID %d]", pid, request.rid);
 
 		if (request.timeout == 0)
 		{
@@ -76,14 +77,14 @@ int LockManager::lock(LockRequest request, pid_t pid)
 			{
 				// Process timed out waiting. He is no more waiting, remove him from waiting list.
 				waiting_locks.remove(waiting_lock);
-				cout << "process " << pid << " timed out" << endl;
+				Logger::getInstance().log("[processs %d timed out]", pid);
 				return TIMEOUT;
 			}
 		}
 
 		// If we are here - process was awaken, so it got its lock.
-		cout << "awaken process " << pid << " locks with type " << request.locktype << " on RID ";
-		cout << request.rid << " with timeout " << request.timeout << endl;
+		Logger::getInstance().log("[awaken process %d locks with type %d on RID %d with timeout %d]",
+								   pid, request.locktype, request.rid, request.timeout);
 		return OK;
 	}
 
@@ -91,9 +92,8 @@ int LockManager::lock(LockRequest request, pid_t pid)
 	Lock lock(request, pid);
 	active_locks.push_back(lock);
 
-	cout << "process " << pid << " locks with type " << request.locktype << " on RID ";
-	cout << request.rid << " with timeout " << request.timeout << endl;
-
+	Logger::getInstance().log("[process %d locks with type %d on RID %d with timeout %d]",
+							   pid, request.locktype, request.rid, request.timeout);
 	return OK;
 }
 
@@ -136,7 +136,7 @@ void LockManager::awake_waiting(rid_t rid)
 
 int LockManager::unlock(UnlockRequest request, pid_t pid)
 {
-	cout << "process " << pid << " unlocks RID " << request.rid << endl;
+	Logger::getInstance().log("[process %d unlocks RID %d]", pid, request.rid);
 	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
 	{
 		if (request.rid == it->request.rid)
@@ -156,25 +156,26 @@ int LockManager::unlock(UnlockRequest request, pid_t pid)
 
 int LockManager::tryLock(TryLockRequest request, pid_t pid)
 {
-	cout << "process " << pid << " tries lock " << request.locktype << " on RID " << request.rid << endl;
+	Logger::getInstance().log("[process %d tries lock %d on RID %d]",
+							   pid, request.locktype, request.rid);
 	// Iterate through all active locks.
 	for (list<Lock>::iterator it = active_locks.begin(); it != active_locks.end(); ++it)
 	{
 		if (request.rid == it->request.rid && !permission[request.locktype][it->request.locktype])
 		{
 			// There is a conflict with some active lock.
-			cout << "you can't have this lock" << endl;
+			Logger::getInstance().log("[process %d, you can't have this lock!]", pid);
 			return ALREADY_LOCKED;
 		}
 	}
-	cout << "you can have this lock" << endl;
+	Logger::getInstance().log("[process %d, you can have this lock]", pid);
 	// There are no conflicts with active locks, so it is possible to set given lock.
 	return OK;
 }
 
 void LockManager::cleanup(pid_t pid)
 {
-	cout << "cleanup after process " << pid << endl;
+	Logger::getInstance().log("[cleanup after process %d]", pid);
 	waiting_locks.remove_if(LockOwner(pid));
 
 	// Collect all RID's that belong to given PID.

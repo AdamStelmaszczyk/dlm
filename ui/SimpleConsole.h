@@ -58,6 +58,9 @@ private:
 	/** pthread structures of started threads - we must
 	 *  wait until they stop. */
 	std::vector<pthread_t> started_threads;
+	/** pthread_t used to wait until cleaner did his work,
+	 *  but when he sleeping - he should be stopped. */
+	pthread_t cleaner_thread;
 };
 
 }
