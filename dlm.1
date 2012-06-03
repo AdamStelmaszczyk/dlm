@@ -1,0 +1,124 @@
+.TH DLM 1  2012-06-03 "Linux Programmer's Manual" "Linux Programmer's Manual"
+.SH NAME
+DLM \- Distributed Lock Manager
+.SH SYNOPSIS
+.nf
+.BI "int DLM_init(int " argc ", char *"argv[] ");
+.br
+.BI "int DLM_lock(rid_t " resource_id ", LockType " lock_type ", time_t " timeout ");
+.br
+.BI "int DLM_unlock(rid_t " resource_id ");
+.br
+.BI "int DLM_trylock(rid_t " resource_id ", LockType " lock_type ");
+.br
+.sp
+.ad b
+.SH DESCRIPTION
+DLM provides functions which programmers can use for advisory locking.
+
+.BI "int DLM_init(int " argc ", char *"argv[] ");
+.br
+
+Initializes Distributed Lock Manager.
+.B Must be called before any other functions. 
+Arguments means the same as in standard main() function.
+
+.BI "int DLM_lock(rid_t " resource_id ", LockType " lock_type ", time_t " timeout ");
+
+Sends a request for lock. 
+.br
+.B rid_t
+is a typedef for unsigned int. 
+.B time_t 
+is a typedef for long.
+.br
+.I resource_id 
+(RID) identifies your resource, a file for example.
+.br
+.I lock_type
+can be one of 5 lock types, defined in 
+.B LockType 
+enum:
+
+enum 
+.B LockType
+.br
+{
+.br
+	CR, // Concurrent Read
+.br
+	CW, // Concurrent Write
+.br
+	PR, // Protected Read
+.br
+	PW, // Protected Write
+.br
+	EX  // Exclusive
+.br
+};
+
+Last argument, 
+.I timeout
+can have 3 meanings.
+.br
+If timeout is a positive number, it stands for ms that calling process will wait for the resource, if it cannot be immediately locked.
+.br
+If timeout is 0, process will wait ad infinitum, until it will obtain the lock.
+.br
+If timeout is -1, it means non-block mode. In that mode, if lock cannot be immediately obtained, an ALREADY_LOCKED error code will be returned.
+
+.BI "int DLM_unlock(rid_t " resource_id ");
+
+Unlocks 
+.I resource_id
+given in argument.
+
+.BI "int DLM_trylock(rid_t " resource_id ", LockType " lock_type ");
+
+Returns 0, if lock of
+.I lock_type
+can be set on
+.I resource_id
+given in first argument. If this RID is already locked, ALREADY_LOCKED error code is returned.
+.B This function does NOT lock anything. It only returns you an information.
+
+.SH "EXAMPLE"
+
+Example of simple program which locks resource with RID = 1:
+
+#include <unistd.h>
+.br
+#include "dlm.h"
+
+int main(int argc, char *argv[])
+.br
+{
+.br
+	DLM_init(argc, argv);
+.br
+	DLM_lock(1, EX, 900);
+.br
+	sleep(5);
+.br
+	return 0;
+.br
+}
+
+After initialization of DLM, we call DLM_lock() to set Exclusive (EX) lock for RID = 1. Timeout is set to 900 ms.
+After that we go to sleep for 5 seconds.
+.br
+
+.SH "RETURN VALUE"
+If everything went fine, 0. Otherwise, an error code is returned:
+.br
+ALREADY_LOCKED, TIMEOUT, NO_SUCH_LOCK, ALREADY_HAVE_LOCK, NOT_DLM_CHILD, DLM_NOT_INITIALIZED, NO_CONNECTION.
+.SH "CONFORMING TO"
+SVr4, POSIX.1-2001, 4.3BSD, C99 and POSIX.1-1996
+.SH COLOPHON
+This page is part of release 3.23 of the Linux
+.I man-pages
+project.
+A description of the project,
+and information about reporting bugs,
+can be found at
+http://www.kernel.org/doc/man-pages/.
