@@ -8,3 +8,6 @@ lock_test: ../api/dlm.cpp lock_test.cpp
 
 try_lock_test: ../api/dlm.cpp try_lock_test.cpp
 	g++ ../api/dlm.cpp try_lock_test.cpp -o try_lock_test
+	
+interactive: ../api/dlm.cpp interactive.cpp
+	g++ ../api/dlm.cpp interactive.cpp -o interactive
