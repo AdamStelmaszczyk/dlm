@@ -5,3 +5,6 @@ test_case: test_case.cpp ../api/dlm.cpp ../exceptions/Warning.cc ../exceptions/E
 
 lock_test: ../api/dlm.cpp lock_test.cpp
 	g++ ../api/dlm.cpp lock_test.cpp -o lock_test
+
+try_lock_test: ../api/dlm.cpp try_lock_test.cpp
+	g++ ../api/dlm.cpp try_lock_test.cpp -o try_lock_test
