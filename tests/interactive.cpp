@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	int type = 0;
 	long timeout = 0;
 	int result = 0;
-	int sleep_duration = 0;
+
 	while(cin)
 	{
 		cout << "PID: " << getpid() - 3 << endl;
@@ -39,10 +39,7 @@ int main(int argc, char **argv)
 				cin >> type;
 				cout << "Podaj timeout: " << endl;
 				cin >> timeout;
-				cout << "Podaj wartosc sleep: " << endl;
-				cin >> sleep_duration;
 				result = DLM_lock(rid, (LockType)type, timeout);
-				sleep(sleep_duration);
 				cout << "Wynik operacji: " << result << endl;
 				break;
 
